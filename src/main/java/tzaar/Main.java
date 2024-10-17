@@ -3,6 +3,7 @@ package tzaar;
 import tzaar.component.Board;
 import tzaar.gui.GamePanel;
 import tzaar.gui.SidePanel;
+import tzaar.util.BoardFillPattern;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,7 @@ public class Main {
         frame.add(sidePanel, BorderLayout.EAST);
 
         // Initialize the GamePanel
-        GamePanel gamePanel = new GamePanel(new Board());
+        GamePanel gamePanel = new GamePanel(new Board(BoardFillPattern.DEFAULT));
         frame.add(gamePanel, BorderLayout.CENTER);
 
         // Make the frame visible

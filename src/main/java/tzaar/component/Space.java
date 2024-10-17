@@ -25,13 +25,17 @@ public class Space {
 
     public String toString() {
         if (this.isEmpty()) {
-            return String.format("Space{loc: %s%d, empty}", locLetter, locNumber);
+            return String.format("Space{loc: %s, empty}", getLocation());
         }
-        return String.format("Space{loc: %s%d, color: %s, type: %s, size %d}", locLetter, locNumber, color.toString().toLowerCase(), type.toString().toLowerCase(), size);
+        return String.format("Space{loc: %s, color: %s, type: %s, size %d}", getLocation(), color.toString().toLowerCase(), type.toString().toLowerCase(), size);
     }
 
     public boolean isEmpty() {
         return size == 0 || type == null || color == null;
+    }
+    
+    public String getLocation() {
+        return String.format("%s%d", locLetter, locNumber);
     }
 
     public FigureType getType() {
