@@ -1,7 +1,11 @@
 package tzaar.component;
 
+import tzaar.util.FigureColor;
+import tzaar.util.FigureType;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Board {
     private final List<Space> spaces;
@@ -23,7 +27,18 @@ public class Board {
                     locNumber += idxLocLetters - 4;
                 }
 
-                spaces.add(new Space(locLetter, locNumber));
+                Space space = new Space(locLetter, locNumber);
+
+                FigureColor color = new Random().nextBoolean() ? FigureColor.WHITE : FigureColor.BLACK;
+                FigureType type = switch (new Random().nextInt(3)) {
+                    case 1 -> FigureType.TZARRA;
+                    case 2 -> FigureType.TZAAR;
+                    default -> FigureType.TOTT;
+                };
+                int size = new Random().nextInt(5) + 1;
+
+                space.setFigure(type, color, size);
+                spaces.add(space);
             }
         }
     }

@@ -12,7 +12,7 @@ public class Space {
     private FigureColor color;
     private int size;
 
-    private SpaceButton button;
+    private final SpaceButton button;
 
     public Space(Character locLetter, Integer locNumber) {
         this.locLetter = locLetter;
@@ -22,7 +22,7 @@ public class Space {
         this.size = 0;
         this.button = new SpaceButton(this);
     }
-    
+
     public String toString() {
         if (this.isEmpty()) {
             return String.format("Space{loc: %s%d, empty}", locLetter, locNumber);
@@ -34,7 +34,26 @@ public class Space {
         return size == 0 || type == null || color == null;
     }
 
+    public FigureType getType() {
+        return type;
+    }
+
+    public FigureColor getColor() {
+        return color;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
     public SpaceButton getButton() {
         return button;
+    }
+
+    public void setFigure(FigureType type, FigureColor color, int size) {
+        this.type = type;
+        this.color = color;
+        this.size = size;
+        this.button.repaint();
     }
 }
