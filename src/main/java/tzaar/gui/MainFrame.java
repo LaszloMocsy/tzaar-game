@@ -9,15 +9,15 @@ public class MainFrame extends JFrame {
         super("Tzaar game");
 
         // Initialize and add StatusPanel
-        StatusPanel statusPanel = new StatusPanel("Initial text");
-        add(statusPanel, BorderLayout.NORTH);
+        SidePanel sidePanel = new SidePanel();
+        add(sidePanel, BorderLayout.EAST);
 
         // Initialize and add GamePanel to the GameFrame
         GamePanel gamePanel = new GamePanel();
         add(gamePanel, BorderLayout.CENTER);
 
         // Make the game frame visible
-        setSize(600, 600);
+        setSize(740, 600);
         setLocationRelativeTo(null);
         setResizable(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
