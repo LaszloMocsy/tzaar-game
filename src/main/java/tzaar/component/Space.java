@@ -1,0 +1,40 @@
+package tzaar.component;
+
+import tzaar.gui.SpaceButton;
+import tzaar.util.FigureColor;
+import tzaar.util.FigureType;
+
+public class Space {
+    public final Character locLetter;
+    public final int locNumber;
+
+    private FigureType type;
+    private FigureColor color;
+    private int size;
+
+    private SpaceButton button;
+
+    public Space(Character locLetter, Integer locNumber) {
+        this.locLetter = locLetter;
+        this.locNumber = locNumber;
+        this.type = null;
+        this.color = null;
+        this.size = 0;
+        this.button = new SpaceButton(this);
+    }
+    
+    public String toString() {
+        if (this.isEmpty()) {
+            return String.format("Space{loc: %s%d, empty}", locLetter, locNumber);
+        }
+        return String.format("Space{loc: %s%d, color: %s, type: %s, size %d}", locLetter, locNumber, color.toString().toLowerCase(), type.toString().toLowerCase(), size);
+    }
+
+    public boolean isEmpty() {
+        return size == 0 || type == null || color == null;
+    }
+
+    public SpaceButton getButton() {
+        return button;
+    }
+}

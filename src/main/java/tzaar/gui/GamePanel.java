@@ -1,35 +1,32 @@
 package tzaar.gui;
 
-import tzaar.util.FigureButtonType;
+import tzaar.component.Board;
+import tzaar.component.Space;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class GamePanel extends JPanel {
-    private final transient Image backgroundImage;
-    private final transient List<FigureButton> buttons = new ArrayList<>();
+    private final transient Image bgImage;
+    private int bgImageSize;
+    private int bgImageX;
+    private int bgImageY;
 
-    public GamePanel() {
+    private final transient Board board;
+
+    public GamePanel(Board board) {
+        this.board = board;
+
         // Load the background image from the resources folder
-        backgroundImage = new ImageIcon("src/main/resources/GameBoard_test.png").getImage();
+        bgImage = new ImageIcon("src/main/resources/GameBoard.png").getImage();
 
         // Set layout to null for manual positioning
         setLayout(null);
 
         // Place buttons
-        for (int i = 0; i < 60; i++) {
-            // Randomly select a figure type
-            // DEBUG! Only for testing
-            FigureButtonType type = switch (new Random().nextInt(3)) {
-                case 1 -> FigureButtonType.TZARRA;
-                case 2 -> FigureButtonType.TZAAR;
-                default -> FigureButtonType.TOTT;
-            };
-
-            FigureButton btn = new FigureButton(type, new Random().nextInt(2) == 0, new Random().nextInt(5) + 1);
-            buttons.add(btn);
+        for (Space space : this.board.getSpaces()) {
+            SpaceButton btn = space.getButton();
             add(btn);
         }
     }
@@ -37,7 +34,11 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        this.paintBackgroundImage(g);
+        this.paintSpaceButtons();
+    }
 
+    private void paintBackgroundImage(Graphics g) {
         // The goal is to paint the background image horizontally and vertically center always
         // To achieve this I need to calculate the image's size and the location for the top left corner (x, y)
 
@@ -46,47 +47,72 @@ public class GamePanel extends JPanel {
         int panelHeight = getHeight();
 
         // Get the image's default dimensions
-        int imageDefaultWidth = backgroundImage.getWidth(null);
-        int imageDefaultHeight = backgroundImage.getHeight(null);
+        int imageDefaultWidth = bgImage.getWidth(null);
+        int imageDefaultHeight = bgImage.getHeight(null);
 
         // Calculate the image's dimensions to use
         Integer[] sizes = {panelWidth, panelHeight, imageDefaultWidth, imageDefaultHeight};
-        int imageSize = Collections.min(Arrays.asList(sizes));
+        this.bgImageSize = Collections.min(Arrays.asList(sizes));
 
         // Calculate x and y coordinates to center the image
-        int x = (panelWidth - imageSize) / 2;
-        int y = (panelHeight - imageSize) / 2;
+        this.bgImageX = (panelWidth - this.bgImageSize) / 2;
+        this.bgImageY = (panelHeight - this.bgImageSize) / 2;
 
         // Draw the image centered in the panel
-        g.drawImage(backgroundImage, x, y, imageSize, imageSize, this);
+        g.drawImage(bgImage, this.bgImageX, this.bgImageY, this.bgImageSize, this.bgImageSize, this);
+    }
 
-        // Reposition all buttons
-        double cellWidth = imageSize / 11.0;
-        double cellHeight = imageSize / 19.0;
+    private void paintSpaceButtons() {
+        double cellWidth = this.bgImageSize / 11.0;
+        double cellHeight = this.bgImageSize / 19.0;
         int buttonWidth = (int) (Math.round(cellWidth));
         int buttonHeight = (int) Math.round(cellHeight * 2);
 
-        int[] cellCounts = new int[]{5, 6, 7, 8, 8, 8, 7, 6, 5};
-        int btnIndex = 0;
-        for (int btnX = 0; btnX < cellCounts.length; btnX++) {
-            for (int btnY = 0; btnY < cellCounts[btnX]; btnY++) {
-                // Calculate the button's x and y coordinates
-                int startX = (int) Math.round(x + cellWidth + (btnX * cellWidth));
-                int startY = (int) Math.round(y + (btnY * cellHeight * 2));
+        final Character[] locLetters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
+        final int[] spacesInLetters = {5, 6, 7, 8, 8, 8, 7, 6, 5};
 
-                if (btnX == 4 && btnY >= 4) {
-                    // Jump over the middle space
-                    startY += buttonHeight;
-                } else if (btnX != 4) {
-                    // Align the column start from the left and from the right
-                    int margin = (cellCounts[btnX] - 9) * -1;
-                    startY += (int) Math.round(margin * cellHeight);
+        // Go through each space (A5,...,A1,B6,...,B1,C7,...,I5)
+        for (int idxLocLetters = 0, btnX = 0; idxLocLetters < locLetters.length; idxLocLetters++, btnX++) {
+            for (int countInLetter = spacesInLetters[idxLocLetters], btnY = 0; countInLetter > 0; countInLetter--, btnY++) {
+                final Character locLetter = locLetters[idxLocLetters];
+                int locNumber = calculateLocNumber(locLetter, countInLetter, idxLocLetters);
+                int[] position = calculateButtonPosition(btnX, btnY, cellWidth, cellHeight, buttonHeight, spacesInLetters);
+
+                Space space = getSpace(locLetter, locNumber);
+                if (space != null) {
+                    space.getButton().setBounds(position[0], position[1], buttonWidth, buttonHeight);
                 }
-
-                // Position the button
-                buttons.get(btnIndex).setBounds(startX, startY, buttonWidth, buttonHeight);
-                btnIndex++;
             }
         }
+    }
+
+    private int calculateLocNumber(Character locLetter, int countInLetter, int idxLocLetters) {
+        int locNumber = countInLetter;
+        if (locLetter == 'E' && locNumber >= 5) {
+            locNumber += 1;
+        } else if (idxLocLetters >= 5) {
+            locNumber += idxLocLetters - 4;
+        }
+        return locNumber;
+    }
+
+    private int[] calculateButtonPosition(int btnX, int btnY, double cellWidth, double cellHeight, int buttonHeight, int[] spacesInLetters) {
+        int startX = (int) Math.round(this.bgImageX + cellWidth + (btnX * cellWidth));
+        int startY = (int) Math.round(this.bgImageY + (btnY * cellHeight * 2));
+
+        if (btnX == 4 && btnY >= 4) {
+            startY += buttonHeight;
+        } else if (btnX != 4) {
+            int margin = (spacesInLetters[btnX] - 9) * -1;
+            startY += (int) Math.round(margin * cellHeight);
+        }
+        return new int[]{startX, startY};
+    }
+
+    private Space getSpace(Character locLetter, int locNumber) {
+        return board.getSpaces().stream()
+                .filter(s -> s.locLetter.equals(locLetter) && s.locNumber == locNumber)
+                .findFirst()
+                .orElse(null);
     }
 }
