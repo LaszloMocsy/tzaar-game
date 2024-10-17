@@ -3,8 +3,8 @@ package tzaar.gui;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameFrame extends JFrame {
-    public GameFrame() {
+public class MainFrame extends JFrame {
+    public MainFrame() {
         // Initialize the game frame
         super("Tzaar game");
 

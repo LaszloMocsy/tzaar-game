@@ -1,5 +1,7 @@
 package tzaar.gui;
 
+import tzaar.util.FigureButtonType;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
@@ -7,7 +9,7 @@ import java.util.List;
 
 public class GamePanel extends JPanel {
     private final transient Image backgroundImage;
-    private final transient List<JButton> buttons = new ArrayList<>();
+    private final transient List<FigureButton> buttons = new ArrayList<>();
 
     public GamePanel() {
         // Load the background image from the resources folder
@@ -18,8 +20,15 @@ public class GamePanel extends JPanel {
 
         // Place buttons
         for (int i = 0; i < 60; i++) {
-            JButton btn = new JButton();
-            btn.setText("btn");
+            // Randomly select a figure type
+            // DEBUG! Only for testing
+            FigureButtonType type = switch (new Random().nextInt(3)) {
+                case 1 -> FigureButtonType.TZARRA;
+                case 2 -> FigureButtonType.TZAAR;
+                default -> FigureButtonType.TOTT;
+            };
+
+            FigureButton btn = new FigureButton(type, new Random().nextInt(2) == 0, new Random().nextInt(5) + 1);
             buttons.add(btn);
             add(btn);
         }
@@ -29,7 +38,7 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // The goal is to paint the image horizontally center always
+        // The goal is to paint the background image horizontally and vertically center always
         // To achieve this I need to calculate the image's size and the location for the top left corner (x, y)
 
         // Get the panel's dimensions
