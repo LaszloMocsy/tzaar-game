@@ -30,12 +30,12 @@ public class Board {
                     locNumber += idxLocLetters - 4;
                 }
 
-                Space space = new Space(locLetter, locNumber);
-                switch (fillPattern) {
-                    case RANDOM -> fillBoardRandomly(space);
-                    case DEFAULT -> fillBoardDefault(space);
-                    default -> space.setFigure(null, null, 0);
-                }
+                SpaceLocation location = new SpaceLocation(idxLocLetters + 1, locNumber);
+                Space space = switch (fillPattern) {
+                    case RANDOM -> fillBoardRandomly(location);
+                    case DEFAULT -> fillBoardDefault(location);
+                    default -> new Space(location);
+                };
                 spaces.add(space);
             }
         }
@@ -45,31 +45,30 @@ public class Board {
         return spaces;
     }
 
-    private static void fillBoardRandomly(Space space) {
+    private static Space fillBoardRandomly(SpaceLocation location) {
         FigureColor color = random.nextBoolean() ? FigureColor.WHITE : FigureColor.BLACK;
         FigureType type = switch (random.nextInt(3)) {
             case 1 -> FigureType.TZARRA;
             case 2 -> FigureType.TZAAR;
             default -> FigureType.TOTT;
         };
-        int size = random.nextInt(5) + 1;
 
-        space.setFigure(type, color, size);
+        return new Space(location, new Figure(color, type));
     }
 
-    private static void fillBoardDefault(Space space) {
+    private static Space fillBoardDefault(SpaceLocation location) {
         String[] blackFigures = {"A1", "A2", "A3", "A4", "B2", "B3", "B4", "C3", "C4", "D4", "E6", "E7", "E8", "E9",
                 "F2", "F3", "F4", "F5", "F7", "F8", "F9", "G3", "G4", "G5", "G8", "G9", "H4", "H5", "H9", "I5"};
         String[] tzarraFigures = {"B2", "B3", "B4", "B5", "C2", "C6", "D2", "D7", "E2", "E8", "F3", "F8", "G4", "G8",
                 "H5", "H6", "H7", "H8"};
         String[] tzaarFigures = {"C3", "C4", "C5", "D3", "D6", "E3", "E7", "F4", "F7", "G5", "G6", "G7"};
 
-        String loc = space.getLocation();
         FigureType type;
-        if (Arrays.asList(tzarraFigures).contains(loc)) type = FigureType.TZARRA;
-        else if (Arrays.asList(tzaarFigures).contains(loc)) type = FigureType.TZAAR;
+        if (Arrays.asList(tzarraFigures).contains(location.toString())) type = FigureType.TZARRA;
+        else if (Arrays.asList(tzaarFigures).contains(location.toString())) type = FigureType.TZAAR;
         else type = FigureType.TOTT;
 
-        space.setFigure(type, Arrays.asList(blackFigures).contains(loc) ? FigureColor.BLACK : FigureColor.WHITE, 1);
+        Figure figure = new Figure(Arrays.asList(blackFigures).contains(location.toString()) ? FigureColor.BLACK : FigureColor.WHITE, type);
+        return new Space(location, figure);
     }
 }

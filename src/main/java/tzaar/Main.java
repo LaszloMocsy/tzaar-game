@@ -1,7 +1,7 @@
 package tzaar;
 
 import tzaar.component.Board;
-import tzaar.gui.GamePanel;
+import tzaar.gui.BoardUI;
 import tzaar.gui.SidePanel;
 import tzaar.util.BoardFillPattern;
 
@@ -18,8 +18,9 @@ public class Main {
         frame.add(sidePanel, BorderLayout.EAST);
 
         // Initialize the GamePanel
-        GamePanel gamePanel = new GamePanel(new Board(BoardFillPattern.DEFAULT));
-        frame.add(gamePanel, BorderLayout.CENTER);
+        Board board = new Board(BoardFillPattern.DEFAULT);
+        BoardUI boardUI = new BoardUI(board);
+        frame.add(boardUI, BorderLayout.CENTER);
 
         // Make the frame visible
         frame.setSize(740, 600);

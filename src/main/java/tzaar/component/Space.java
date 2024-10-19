@@ -1,63 +1,40 @@
 package tzaar.component;
 
-import tzaar.gui.SpaceButton;
 import tzaar.util.FigureColor;
 import tzaar.util.FigureType;
 
 public class Space {
-    public final Character locLetter;
-    public final int locNumber;
+    public final SpaceLocation location;
+    private Figure figure;
 
-    private FigureType type;
-    private FigureColor color;
-    private int size;
-
-    private final SpaceButton button;
-
-    public Space(Character locLetter, Integer locNumber) {
-        this.locLetter = locLetter;
-        this.locNumber = locNumber;
-        this.type = null;
-        this.color = null;
-        this.size = 0;
-        this.button = new SpaceButton(this);
+    public Space(SpaceLocation location) {
+        this.location = location;
+        this.figure = null;
     }
 
+    public Space(SpaceLocation location, Figure figure) {
+        this.location = location;
+        this.figure = figure;
+    }
+
+    public boolean hasFigure() {
+        return this.figure != null;
+    }
+
+    public FigureColor getFigureColor() {
+        return this.figure.getColor();
+    }
+
+    public FigureType getFigureType() {
+        return this.figure.getType();
+    }
+
+    public int getFigureSize() {
+        return this.figure.getSize();
+    }
+
+    @Override
     public String toString() {
-        if (this.isEmpty()) {
-            return String.format("Space{loc: %s, empty}", getLocation());
-        }
-        return String.format("Space{loc: %s, color: %s, type: %s, size %d}", getLocation(), color.toString().toLowerCase(), type.toString().toLowerCase(), size);
-    }
-
-    public boolean isEmpty() {
-        return size == 0 || type == null || color == null;
-    }
-    
-    public String getLocation() {
-        return String.format("%s%d", locLetter, locNumber);
-    }
-
-    public FigureType getType() {
-        return type;
-    }
-
-    public FigureColor getColor() {
-        return color;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public SpaceButton getButton() {
-        return button;
-    }
-
-    public void setFigure(FigureType type, FigureColor color, int size) {
-        this.type = type;
-        this.color = color;
-        this.size = size;
-        this.button.repaint();
+        return String.format("Space{loc: %s}", location);
     }
 }

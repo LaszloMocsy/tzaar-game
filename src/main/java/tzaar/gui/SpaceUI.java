@@ -7,11 +7,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class SpaceButton extends JButton {
+public class SpaceUI extends JButton {
     private final transient Space space;
     private boolean isHovered = false;
 
-    public SpaceButton(Space space) {
+    public SpaceUI(Space space) {
         this.space = space;
 
         // Make the button transparent
@@ -22,7 +22,7 @@ public class SpaceButton extends JButton {
 
         // Add an ActionListener to show an alert when the button is clicked
         // DEBUG! Only for testing
-        addActionListener(e -> JOptionPane.showMessageDialog(SpaceButton.this, this.space.toString()));
+        addActionListener(e -> JOptionPane.showMessageDialog(SpaceUI.this, this.space.toString()));
 
         // Add a MouseAdapter to handle hover events
         addMouseListener(new MouseAdapter() {
@@ -40,19 +40,23 @@ public class SpaceButton extends JButton {
         });
     }
 
+    public int[] getSpaceCoordinates() {
+        return this.space.location.getCoordinates();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw background if the button is hovered
-        if (isHovered) {
-            g.setColor(new Color(255, 255, 0, 128)); // semi-transparent yellow
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
-
         // Draw the figure stack
-        if (!space.isEmpty()) {
+        if (space.hasFigure()) {
             this.paintFigureStack(g);
+
+            // Draw background if the button is hovered while having a figure
+            if (isHovered) {
+                g.setColor(new Color(255, 255, 0, 128)); // semi-transparent yellow
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
         }
     }
 
@@ -60,8 +64,8 @@ public class SpaceButton extends JButton {
         final float HPADDING_PERCENTAGE = 0.2F; // percentage (%) of the button's width
         final float STACK_OFFSET_PERCENTAGE = 0.06F; // percentage (%) of the offset between each figure in the stack
 
-        String topImageFilename = String.format("src/main/resources/GameFigure-%s-%s.png", this.space.getColor().toString().toLowerCase(), this.space.getType().toString().toLowerCase());
-        String stackImageFilename = String.format("src/main/resources/GameFigure-%s-tott.png", this.space.getColor().toString().toLowerCase());
+        String topImageFilename = String.format("src/main/resources/GameFigure-%s-%s.png", this.space.getFigureColor().toString().toLowerCase(), this.space.getFigureType().toString().toLowerCase());
+        String stackImageFilename = String.format("src/main/resources/GameFigure-%s-tott.png", this.space.getFigureColor().toString().toLowerCase());
         Image topImage = new ImageIcon(topImageFilename).getImage();
         Image stackImage = new ImageIcon(stackImageFilename).getImage();
 
@@ -75,9 +79,9 @@ public class SpaceButton extends JButton {
         int[] baseImagePosition = calculateBaseImagePosition(buttonWidthPadding, buttonDimensions, imageDimensions);
 
         // Draw the figures stacked on top of each other
-        for (int i = 0; i < this.space.getSize(); i++) {
+        for (int i = 0; i < this.space.getFigureSize(); i++) {
             int stackOffset = Math.round(buttonHeight * STACK_OFFSET_PERCENTAGE) * i;
-            Image image = i == this.space.getSize() - 1 ? topImage : stackImage;
+            Image image = i == this.space.getFigureSize() - 1 ? topImage : stackImage;
             g.drawImage(image, baseImagePosition[0], baseImagePosition[1] - stackOffset, imageDimensions[0], imageDimensions[1], this);
         }
     }
