@@ -2,7 +2,6 @@ package tzaar;
 
 import tzaar.component.Board;
 import tzaar.gui.BoardUI;
-import tzaar.gui.SidePanel;
 import tzaar.util.BoardFillPattern;
 
 import javax.swing.*;
@@ -12,10 +11,6 @@ public class Main {
     public static void main(String[] args) {
         // Initialize the frame
         JFrame frame = new JFrame("Tzaar game");
-
-        // Initialize the SidePanel
-        SidePanel sidePanel = new SidePanel();
-        frame.add(sidePanel, BorderLayout.EAST);
 
         // Initialize the GamePanel
         Board board = new Board(BoardFillPattern.DEFAULT);
