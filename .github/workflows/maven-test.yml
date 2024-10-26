@@ -16,7 +16,7 @@ jobs:
     # Define a matrix to test on multiple versions of Java (optional)
     strategy:
       matrix:
-        java-version: [8, 23]
+        java-version: [8, 22]
 
     # Steps to execute within the job
     steps:
