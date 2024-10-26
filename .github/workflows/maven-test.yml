@@ -1,0 +1,56 @@
+name: Maven Tests
+
+# Trigger the workflow on push or pull request events to the main branch
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+# Define the jobs that the workflow will run
+jobs:
+  test:
+    # Runs the job on a virtual machine with Ubuntu installed
+    runs-on: ubuntu-latest
+
+    # Define a matrix to test on multiple versions of Java (optional)
+    strategy:
+      matrix:
+        java-version: [8, 23]
+
+    # Steps to execute within the job
+    steps:
+      # Step 1: Check out the repository to the virtual machine
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up the required Java version
+      - name: Set up Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'  # Temurin is the open-source build of the JDK
+
+      # Step 3: Cache Maven dependencies to speed up builds
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Step 4: Run the Maven tests
+      - name: Run tests
+        run: mvn clean test
+
+      # Step 5: Generate test coverage report
+      - name: Generate code coverage report
+        run: mvn jacoco:report
+
+      # Step 6: Make the coverage report downloadable
+      - name: Upload code coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: target/site/jacoco
