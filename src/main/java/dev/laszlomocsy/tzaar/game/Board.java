@@ -6,7 +6,7 @@ import java.util.List;
 /// A standalone game board. It contains the spaces and manages the game logic.
 public class Board {
     /// The spaces on the board.
-    private List<Space> spaces;
+    private final List<Space> spaces;
 
     //-- CONSTRUCTORS --//
 
