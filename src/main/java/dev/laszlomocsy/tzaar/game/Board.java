@@ -5,37 +5,20 @@ import java.util.List;
 
 /// A standalone game board. It contains the spaces and manages the game logic.
 public class Board {
-    /// The spaces on the board.
-    private final List<Space> spaces;
+    /// All figures on the board.
+    private final List<Figure> figures;
 
     //-- CONSTRUCTORS --//
 
-    /// Initializes a new Board with the default layout.
+    /// Initializes a new Board.
     public Board() {
-        this.spaces = new ArrayList<>();
-
-        int[] numOfSpaces = {5, 6, 7, 8, 8, 8, 7, 6, 5};
-        for (int coordX = 1; coordX <= 9; coordX++) {
-            int coordYBase = coordX <= 5 ? 1 : coordX - 5;
-            if (coordX > 5) {
-                coordYBase += 1;
-            }
-
-            for (int i = 0; i < numOfSpaces[coordX - 1]; i++) {
-                int coordY = coordYBase + i;
-                if (coordX == 5 && i > 3) {
-                    coordY += 1;
-                }
-                
-                spaces.add(new Space(new SpaceCoordinate(coordX, coordY)));
-            }
-        }
+        this.figures = new ArrayList<>();
     }
     
     //-- GETTERS --//
     
-    /// Returns the spaces on the board.
-    public List<Space> getSpaces() {
-        return spaces;
+    /// Returns all figures on the board.
+    public List<Figure> getFigures() {
+        return figures;
     }
 }
