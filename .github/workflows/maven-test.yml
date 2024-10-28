@@ -35,13 +35,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Step 4: Run the Maven tests and generate a coverage report
-      - name: Run tests and generate coverage report
-        run: mvn clean verify jacoco:report
-
-      # Step 5: Make the coverage report downloadable
-      - name: Upload code coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: target/site/jacoco
+      # Step 4: Run the Maven tests
+      - name: Run tests
+        run: mvn clean test
