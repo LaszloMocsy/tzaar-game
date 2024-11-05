@@ -13,9 +13,12 @@ import java.util.List;
 public class BoardUI extends JPanel {
     private final transient Image boardImage;
     private final transient List<Image> figureImages; // W-Tzaar, W-Tzarra, W-Tott, B-Tzaar, B-Tzarra, B-Tott
-
+    private int bgImageSize;
+    private float cellWidth;
+    private float cellHeight;
+    private float figureSize;
     private transient Board boardRef;
-    private int imageSize;
+    private transient Position bgImagePosition = new Position(0, 0);
 
     //-- CONSTRUCTOR --//
 
@@ -36,13 +39,43 @@ public class BoardUI extends JPanel {
     /// Set up the board
     public void setupBoard(Board board) {
         this.boardRef = board;
-        System.out.println("Setting up the board from BoardUI");
+
+        // Repaint the board
+        repaint();
+
+        // Update the Figure buttons
+        this.removeAll();
+        for (Figure figure : board.getFigures()) {
+            FigureButton figureButton = new FigureButton();
+            figureButton.setActionCommand(figure.getLocation().asString());
+            this.add(figureButton);
+        }
     }
 
     /// Clear the board
     public void clearBoard() {
         this.boardRef = null;
-        System.out.println("Clearing the board from BoardUI");
+
+        // Repaint the board and remove the Figure buttons
+        repaint();
+        this.removeAll();
+    }
+
+    //-- METHODS (private) --//
+
+    /// Convert a coordinate to a position on the boardUI
+    private Position coordinateToPositionOrigo(Coordinate coordinate) {
+        int x = coordinate.x();
+        int y = (9 - coordinate.y()) * 2;
+
+        if (x % 2 == 1) y += 1;
+        if (x <= 5) y -= ((5 - x) / 2) * 2;
+        else y -= ((4 - x) / 2) * 2;
+
+        final float startX = this.bgImagePosition.x;
+        final float startY = this.bgImagePosition.y;
+
+        return new Position(startX + (x * cellWidth) + (cellWidth / 2), startY + (y * cellHeight) + (cellHeight / 2));
     }
 
     // METHODS (paint) --//
@@ -60,53 +93,47 @@ public class BoardUI extends JPanel {
         int bgImageHeight = boardImage.getHeight(null);
 
         // Calculate the image size to fit within the panel
-        this.imageSize = Collections.min(Arrays.asList(panelWidth, panelHeight, bgImageWidth, bgImageHeight));
+        this.bgImageSize = Collections.min(Arrays.asList(panelWidth, panelHeight, bgImageWidth, bgImageHeight));
 
         // Calculate the image's position to center it within the panel
-        int posX = (panelWidth - imageSize) / 2;
-        int posY = (panelHeight - imageSize) / 2;
+        int posX = (panelWidth - bgImageSize) / 2;
+        int posY = (panelHeight - bgImageSize) / 2;
+        this.bgImagePosition = new Position(posX, posY);
 
         // Draw the image
-        g.drawImage(boardImage, posX, posY, imageSize, imageSize, null);
+        g.drawImage(boardImage, posX, posY, bgImageSize, bgImageSize, null);
     }
 
     /// Paint the figures on the board
     private void paintFigures(Graphics g) {
-        // Only draw figures if the board is set up
-        if (boardRef == null) return;
-
-        //-- CONTANTS --//
-        final int gridWidth = 11;
-        final int gridHeight = 19;
-        final float cellWidth = (float) imageSize / gridWidth;
-        final float cellHeight = (float) imageSize / gridHeight;
-        final float size = cellWidth / 2;
-        final float startX = (float) (getWidth() - imageSize) / 2 - size / 2;
-        final float startY = (float) (getHeight() - imageSize) / 2 - size / 2;
-
         // Loop through the board and draw the figures
         // TODO - Draw figure stacks
         for (Figure figure : this.boardRef.getFigures()) {
-            int[] position = getFigurePosition(figure.getLocation());
+            Position origo = coordinateToPositionOrigo(figure.getLocation());
+            Position anchorOffset = new Position(figureSize / 2, figureSize / 2);
+            Position anchor = origo.calculateAnchor(anchorOffset);
             Image image = figureImages.get((figure.getColor().ordinal() * 3) + figure.getType().ordinal());
-
-            int posX = Math.round(startX + (position[0] * cellWidth) + (cellWidth / 2));
-            int posY = Math.round(startY + (position[1] * cellHeight) + (cellHeight / 2));
-
-            g.drawImage(image, posX, posY, Math.round(size), Math.round(size), null);
+            g.drawImage(image, anchor.roundX(), anchor.roundY(), Math.round(figureSize), Math.round(figureSize), null);
         }
     }
 
-    /// Get the position of a figure on the board
-    ///
-    /// TODO - Refactor this method to be resuable for buttons
-    private int[] getFigurePosition(Coordinate coordinate) {
-        int y = (9 - coordinate.y()) * 2;
-        if (coordinate.x() % 2 == 1) y += 1;
-        if (coordinate.x() <= 5) y -= ((5 - coordinate.x()) / 2) * 2;
-        else y -= ((4 - coordinate.x()) / 2) * 2;
-
-        return new int[]{coordinate.x(), y};
+    /// Position the figure buttons on the board
+    private void positionFigureButtons() {
+        // Loop through the board and position the buttons
+        for (Component component : this.getComponents()) {
+            // Calculate the button's size using the figure's size
+            float buttonWidth = figureSize * 1.2f;
+            float buttonHeight = figureSize * 1.2f;
+            
+            // Calculate the button's position
+            FigureButton figureButton = (FigureButton) component;
+            Coordinate coordinate = Coordinate.fromString(figureButton.getActionCommand());
+            Position origo = coordinateToPositionOrigo(coordinate);
+            Position anchorOffset = new Position(buttonWidth / 2, buttonHeight / 2);
+            Position anchor = origo.calculateAnchor(anchorOffset);
+            
+            figureButton.setBounds(anchor.roundX(), anchor.roundY(), Math.round(buttonWidth), Math.round(buttonHeight));
+        }
     }
 
     //-- OVERRIDES --//
@@ -115,6 +142,31 @@ public class BoardUI extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         paintBackground(g);
+
+        // Only draw figures if the board is set up
+        if (boardRef == null) return;
+
+        cellWidth = (float) bgImageSize / 11;
+        cellHeight = (float) bgImageSize / 19;
+        figureSize = cellWidth / 2;
+        
         paintFigures(g);
+        positionFigureButtons();
+    }
+
+    //-- CLASSES --//
+
+    private record Position(float x, float y) {
+        public int roundX() {
+            return Math.round(this.x);
+        }
+
+        public int roundY() {
+            return Math.round(this.y);
+        }
+
+        public Position calculateAnchor(Position offset) {
+            return new Position(this.x - offset.x, this.y - offset.y);
+        }
     }
 }
