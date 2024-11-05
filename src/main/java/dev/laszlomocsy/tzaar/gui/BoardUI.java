@@ -3,6 +3,7 @@ package dev.laszlomocsy.tzaar.gui;
 import dev.laszlomocsy.tzaar.game.Board;
 import dev.laszlomocsy.tzaar.game.Coordinate;
 import dev.laszlomocsy.tzaar.game.Figure;
+import dev.laszlomocsy.tzaar.game.FigureColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class BoardUI extends JPanel {
+    private static final float FIGURE_STACK_PADDING = 0.15f;
+    private static final int FIGURE_STACK_VISIBLE_MAX = 6;
     private final transient Image boardImage;
     private final transient List<Image> figureImages; // W-Tzaar, W-Tzarra, W-Tott, B-Tzaar, B-Tzarra, B-Tott
     private int bgImageSize;
@@ -23,7 +26,7 @@ public class BoardUI extends JPanel {
     //-- CONSTRUCTOR --//
 
     public BoardUI() {
-        this.boardImage = new ImageIcon("src/main/resources/Tzaar-GameBoard-grid.png").getImage();
+        this.boardImage = new ImageIcon("src/main/resources/Tzaar-GameBoard.png").getImage();
         this.figureImages = Arrays.asList(
                 new ImageIcon("src/main/resources/GameFigure-white-tzaar.png").getImage(),
                 new ImageIcon("src/main/resources/GameFigure-white-tzarra.png").getImage(),
@@ -48,6 +51,12 @@ public class BoardUI extends JPanel {
         for (Figure figure : board.getFigures()) {
             FigureButton figureButton = new FigureButton();
             figureButton.setActionCommand(figure.getLocation().asString());
+            figureButton.addActionListener(e -> {
+                // Show a dialog with the figure's details
+                String message = String.format("Location: %s%nColor: %s%nType: %s%nHeight: %d",
+                        figure.getLocation().asString(), figure.getColor(), figure.getType(), figure.getHeight());
+                JOptionPane.showMessageDialog(this, message, "Figure Details", JOptionPane.INFORMATION_MESSAGE);
+            });
             this.add(figureButton);
         }
     }
@@ -107,13 +116,32 @@ public class BoardUI extends JPanel {
     /// Paint the figures on the board
     private void paintFigures(Graphics g) {
         // Loop through the board and draw the figures
-        // TODO - Draw figure stacks
         for (Figure figure : this.boardRef.getFigures()) {
             Position origo = coordinateToPositionOrigo(figure.getLocation());
             Position anchorOffset = new Position(figureSize / 2, figureSize / 2);
-            Position anchor = origo.calculateAnchor(anchorOffset);
-            Image image = figureImages.get((figure.getColor().ordinal() * 3) + figure.getType().ordinal());
-            g.drawImage(image, anchor.roundX(), anchor.roundY(), Math.round(figureSize), Math.round(figureSize), null);
+            Position baseAnchor = origo.calculateAnchor(anchorOffset);
+
+            for (int i = 0; i < figure.getHeight(); i++) {
+                Position anchor = baseAnchor.calculateAnchor(new Position(0, figureSize * FIGURE_STACK_PADDING * Math.min(i, FIGURE_STACK_VISIBLE_MAX)));
+                Image image = figure.getHeight() - 1 == i
+                        ? figureImages.get((figure.getColor().ordinal() * 3) + figure.getType().ordinal())
+                        : figureImages.get((figure.getColor().ordinal() * 3) + 2);
+                g.drawImage(image, anchor.roundX(), anchor.roundY(), Math.round(figureSize), Math.round(figureSize), null);
+
+                // Draw the figure's height as text if it's 5 or more
+                final int figureStackVisibleTextMin = 3;
+                if (figure.getHeight() >= figureStackVisibleTextMin) {
+                    g.setColor(figure.getColor() == FigureColor.WHITE ? Color.BLACK : Color.WHITE);
+                    g.setFont(new Font("Arial", Font.PLAIN, (int) Math.floor(figureSize / 4)));
+                    String text = String.format("x%d", figure.getHeight());
+                    FontMetrics metrics = g.getFontMetrics();
+                    int textWidth = metrics.stringWidth(text);
+                    int textHeight = metrics.getHeight();
+                    int textX = anchor.roundX() + (Math.round(figureSize) - textWidth) / 2;
+                    int textY = anchor.roundY() + (Math.round(figureSize) + textHeight) / 2 - metrics.getDescent();
+                    g.drawString(text, textX, textY);
+                }
+            }
         }
     }
 
@@ -121,18 +149,23 @@ public class BoardUI extends JPanel {
     private void positionFigureButtons() {
         // Loop through the board and position the buttons
         for (Component component : this.getComponents()) {
-            // Calculate the button's size using the figure's size
-            float buttonWidth = figureSize * 1.2f;
-            float buttonHeight = figureSize * 1.2f;
-            
-            // Calculate the button's position
+            // Get the figure represented by the button
             FigureButton figureButton = (FigureButton) component;
+            Figure figure = this.boardRef.getFigureFrom(Coordinate.fromString(figureButton.getActionCommand()));
+
+            // Calculate the button's size using the figure's size
+            final float figureButtonPadding = 1.2f;
+            float buttonWidth = figureSize * figureButtonPadding;
+            float buttonHeight = figureSize * figureButtonPadding;
+            float buttonHeightStack = figureSize * FIGURE_STACK_PADDING * Math.min(figure.getHeight() - 1, FIGURE_STACK_VISIBLE_MAX);
+
+            // Calculate the button's position
             Coordinate coordinate = Coordinate.fromString(figureButton.getActionCommand());
             Position origo = coordinateToPositionOrigo(coordinate);
-            Position anchorOffset = new Position(buttonWidth / 2, buttonHeight / 2);
+            Position anchorOffset = new Position(buttonWidth / 2, (buttonHeight / 2) + buttonHeightStack);
             Position anchor = origo.calculateAnchor(anchorOffset);
-            
-            figureButton.setBounds(anchor.roundX(), anchor.roundY(), Math.round(buttonWidth), Math.round(buttonHeight));
+
+            figureButton.setBounds(anchor.roundX(), anchor.roundY(), Math.round(buttonWidth), Math.round(buttonHeight + buttonHeightStack));
         }
     }
 
@@ -149,7 +182,7 @@ public class BoardUI extends JPanel {
         cellWidth = (float) bgImageSize / 11;
         cellHeight = (float) bgImageSize / 19;
         figureSize = cellWidth / 2;
-        
+
         paintFigures(g);
         positionFigureButtons();
     }

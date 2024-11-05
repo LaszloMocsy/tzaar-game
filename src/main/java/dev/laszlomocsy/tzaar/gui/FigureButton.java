@@ -5,8 +5,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 
 public class FigureButton extends JButton {
-    private boolean isMouseHover = false;
-
     public FigureButton() {
         this.setOpaque(false);
         this.setContentAreaFilled(false);
@@ -16,25 +14,13 @@ public class FigureButton extends JButton {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                isMouseHover = true;
-                repaint();
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                isMouseHover = false;
-                repaint();
+                setCursor(Cursor.getDefaultCursor());
             }
         });
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        if (isMouseHover) {
-            g.setColor(new Color(255, 219, 0, 100));
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
     }
 }
