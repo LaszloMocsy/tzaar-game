@@ -1,12 +1,10 @@
 package dev.laszlomocsy.tzaar.gui;
 
-import dev.laszlomocsy.tzaar.game.Board;
-import dev.laszlomocsy.tzaar.game.Coordinate;
-import dev.laszlomocsy.tzaar.game.Figure;
-import dev.laszlomocsy.tzaar.game.FigureColor;
+import dev.laszlomocsy.tzaar.game.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -16,16 +14,19 @@ public class BoardUI extends JPanel {
     private static final int FIGURE_STACK_VISIBLE_MAX = 6;
     private final transient Image boardImage;
     private final transient List<Image> figureImages; // W-Tzaar, W-Tzarra, W-Tott, B-Tzaar, B-Tzarra, B-Tott
+    private final GameStatusUI gameStatusUI;
     private int bgImageSize;
     private float cellWidth;
     private float cellHeight;
     private float figureSize;
     private transient Board boardRef;
     private transient Position bgImagePosition = new Position(0, 0);
+    private transient Coordinate selectedFigureCoordinate = null;
 
     //-- CONSTRUCTOR --//
 
-    public BoardUI() {
+    public BoardUI(GameStatusUI gameStatusUI) {
+        this.gameStatusUI = gameStatusUI;
         this.boardImage = new ImageIcon("src/main/resources/Tzaar-GameBoard.png").getImage();
         this.figureImages = Arrays.asList(
                 new ImageIcon("src/main/resources/GameFigure-white-tzaar.png").getImage(),
@@ -42,32 +43,29 @@ public class BoardUI extends JPanel {
     /// Set up the board
     public void setupBoard(Board board) {
         this.boardRef = board;
-
-        // Repaint the board
-        repaint();
+        this.selectedFigureCoordinate = null;
 
         // Update the Figure buttons
         this.removeAll();
         for (Figure figure : board.getFigures()) {
             FigureButton figureButton = new FigureButton();
             figureButton.setActionCommand(figure.getLocation().asString());
-            figureButton.addActionListener(e -> {
-                // Show a dialog with the figure's details
-                String message = String.format("Location: %s%nColor: %s%nType: %s%nHeight: %d",
-                        figure.getLocation().asString(), figure.getColor(), figure.getType(), figure.getHeight());
-                JOptionPane.showMessageDialog(this, message, "Figure Details", JOptionPane.INFORMATION_MESSAGE);
-            });
+            figureButton.addActionListener(this::figureButtonClicked);
             this.add(figureButton);
         }
+
+        // Repaint the board
+        repaint();
     }
 
     /// Clear the board
     public void clearBoard() {
         this.boardRef = null;
+        this.selectedFigureCoordinate = null;
 
         // Repaint the board and remove the Figure buttons
-        repaint();
         this.removeAll();
+        repaint();
     }
 
     //-- METHODS (private) --//
@@ -85,6 +83,71 @@ public class BoardUI extends JPanel {
         final float startY = this.bgImagePosition.y;
 
         return new Position(startX + (x * cellWidth) + (cellWidth / 2), startY + (y * cellHeight) + (cellHeight / 2));
+    }
+
+    /// Handle a figure button click
+    ///
+    /// @param event The ActionEvent of the button click
+    private void figureButtonClicked(ActionEvent event) {
+        String clickedCoordinate = event.getActionCommand();
+        if (this.selectedFigureCoordinate == null) {
+            selectFigure(clickedCoordinate);
+        } else {
+            handleFigureSelection(clickedCoordinate);
+        }
+        repaint();
+    }
+
+    /// Select a figure to move
+    private void selectFigure(String clickedCoordinate) {
+        this.selectedFigureCoordinate = Coordinate.fromString(clickedCoordinate);
+        gameStatusUI.setStatusLabel("Select a target location...  [%s -> ??]".formatted(clickedCoordinate));
+    }
+
+    /// Deselect the selected figure
+    private void deselectFigure() {
+        this.selectedFigureCoordinate = null;
+        gameStatusUI.setStatusLabel("Select a figure to move...");
+    }
+
+    private void handleFigureSelection(String clickedCoordinate) {
+        if (this.selectedFigureCoordinate.asString().equals(clickedCoordinate)) {
+            deselectFigure();
+        } else {
+            moveFigure(clickedCoordinate);
+        }
+    }
+
+    /// Move the selected figure to the target location
+    private void moveFigure(String clickedCoordinate) {
+        Coordinate targetCoordinate = Coordinate.fromString(clickedCoordinate);
+        MoveResult moveResult = this.boardRef.moveFigure(this.selectedFigureCoordinate, targetCoordinate);
+        if (moveResult == MoveResult.SUCCESS) {
+            removeFigureButton();
+            deselectFigure();
+        } else {
+            String resultText = switch (moveResult) {
+                case INVALID_MOVE -> "This is an invalid move!";
+                case NO_FIGURE_TO_MOVE -> "There is no figure to move!";
+                case NO_FIGURE_TO_CAPTURE_OR_STACK -> "There is no figure to capture or stack!";
+                case NO_SAME_AXIS -> "The selected figures are not on the same axis!";
+                case NOT_THE_CLOSEST_FIGURE -> "There are figures between the selected figures!";
+                case GAME_NOT_IN_PROGRESS -> "The game is not in progress!";
+                default -> "Unknown error!";
+            };
+            gameStatusUI.setStatusLabel("%s  [%s -> %s]  /  Select a target location...  [%s -> ??]".formatted(resultText, selectedFigureCoordinate, clickedCoordinate, selectedFigureCoordinate));
+        }
+    }
+
+    /// Remove the button of the selected figure
+    private void removeFigureButton() {
+        Component[] components = this.getComponents();
+        for (Component component : components) {
+            if (((FigureButton) component).getActionCommand().equals(selectedFigureCoordinate.asString())) {
+                this.remove(component);
+                break;
+            }
+        }
     }
 
     // METHODS (paint) --//
@@ -121,26 +184,44 @@ public class BoardUI extends JPanel {
             Position anchorOffset = new Position(figureSize / 2, figureSize / 2);
             Position baseAnchor = origo.calculateAnchor(anchorOffset);
 
-            for (int i = 0; i < figure.getHeight(); i++) {
-                Position anchor = baseAnchor.calculateAnchor(new Position(0, figureSize * FIGURE_STACK_PADDING * Math.min(i, FIGURE_STACK_VISIBLE_MAX)));
-                Image image = figure.getHeight() - 1 == i
-                        ? figureImages.get((figure.getColor().ordinal() * 3) + figure.getType().ordinal())
-                        : figureImages.get((figure.getColor().ordinal() * 3) + 2);
-                g.drawImage(image, anchor.roundX(), anchor.roundY(), Math.round(figureSize), Math.round(figureSize), null);
+            paintFigure(g, figure, baseAnchor);
+        }
+    }
+    
+    /// Paint a single figure to the board
+    private void paintFigure(Graphics g, Figure figure, Position baseAnchor) {
+        final int figureStackVisibleTextMin = 3;
+        final int figureHeight = figure.getHeight();
+        final int figureTopIndex = Math.min(figureHeight, FIGURE_STACK_VISIBLE_MAX) - 1;
+        for (int i = 0; i <= figureTopIndex; i++) {
+            // Draw the selected figure's visualizer
+            if (this.selectedFigureCoordinate != null && this.selectedFigureCoordinate.equals(figure.getLocation())) {
+                final float ringPadding = 0.25f;
+                float ringSize = figureSize * (1 + ringPadding);
+                int ringSizeInt = Math.round(ringSize);
+                double ringPaddingCalc = Math.round((ringSize * ringPadding) / 2);
+                g.setColor(Color.BLUE);
+                g.drawOval((int) Math.round(baseAnchor.x - ringPaddingCalc), (int) Math.round(baseAnchor.y - ringPaddingCalc), ringSizeInt, ringSizeInt);
+            }
 
-                // Draw the figure's height as text if it's 5 or more
-                final int figureStackVisibleTextMin = 3;
-                if (figure.getHeight() >= figureStackVisibleTextMin) {
-                    g.setColor(figure.getColor() == FigureColor.WHITE ? Color.BLACK : Color.WHITE);
-                    g.setFont(new Font("Arial", Font.PLAIN, (int) Math.floor(figureSize / 4)));
-                    String text = String.format("x%d", figure.getHeight());
-                    FontMetrics metrics = g.getFontMetrics();
-                    int textWidth = metrics.stringWidth(text);
-                    int textHeight = metrics.getHeight();
-                    int textX = anchor.roundX() + (Math.round(figureSize) - textWidth) / 2;
-                    int textY = anchor.roundY() + (Math.round(figureSize) + textHeight) / 2 - metrics.getDescent();
-                    g.drawString(text, textX, textY);
-                }
+            // Draw the figure's image
+            Position anchor = baseAnchor.calculateAnchor(new Position(0, figureSize * FIGURE_STACK_PADDING * i));
+            Image image = i == figureTopIndex
+                    ? figureImages.get((figure.getColor().ordinal() * 3) + figure.getType().ordinal())
+                    : figureImages.get((figure.getColor().ordinal() * 3) + 2);
+            g.drawImage(image, anchor.roundX(), anchor.roundY(), Math.round(figureSize), Math.round(figureSize), null);
+
+            // Draw the figure's height as text if it's 5 or more
+            if (i == figureTopIndex && figureHeight >= figureStackVisibleTextMin) {
+                g.setColor(figure.getColor() == FigureColor.WHITE ? Color.BLACK : Color.WHITE);
+                g.setFont(new Font("Arial", Font.PLAIN, (int) Math.floor(figureSize / 4)));
+                String text = String.format("x%d", figureHeight);
+                FontMetrics metrics = g.getFontMetrics();
+                int textWidth = metrics.stringWidth(text);
+                int textHeight = metrics.getHeight();
+                int textX = anchor.roundX() + (Math.round(figureSize) - textWidth) / 2;
+                int textY = anchor.roundY() + (Math.round(figureSize) + textHeight) / 2 - metrics.getDescent();
+                g.drawString(text, textX, textY);
             }
         }
     }

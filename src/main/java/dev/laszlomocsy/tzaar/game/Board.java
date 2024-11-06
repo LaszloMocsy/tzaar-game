@@ -104,7 +104,7 @@ public class Board {
             return MoveResult.NO_FIGURE_TO_MOVE;
         } else if (figureB == null) {
             return MoveResult.NO_FIGURE_TO_CAPTURE_OR_STACK;
-        } else if (Coordinate.isOnSameAxis(startCoord, endCoord)) {
+        } else if (!Coordinate.isOnSameAxis(startCoord, endCoord)) {
             return MoveResult.NO_SAME_AXIS;
         }
 
