@@ -6,7 +6,7 @@ public class GameStatusUI extends JPanel {
     private final JLabel statusLabel;
 
     public GameStatusUI() {
-        statusLabel = new JLabel("Status: ");
+        statusLabel = new JLabel("~~ No information ~~");
         this.add(statusLabel);
     }
 

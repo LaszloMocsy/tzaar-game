@@ -56,6 +56,9 @@ public class BoardUI extends JPanel {
 
         // Repaint the board
         repaint();
+        
+        // Set the game status label
+        gameStatusUI.setStatusLabel("Select a figure to move...");
     }
 
     /// Clear the board
