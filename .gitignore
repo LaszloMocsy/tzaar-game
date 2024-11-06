@@ -12,6 +12,9 @@ target/
 *.iml
 *.ipr
 
+# Test coverage reports
+htmlReport/
+
 ### Eclipse ###
 .apt_generated
 .classpath

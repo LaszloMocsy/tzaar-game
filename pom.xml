@@ -12,19 +12,17 @@
         <plugins>
             <!-- Other plugins -->
 
-            <!-- JaCoCo plugin for code coverage -->
+            <!-- JaCoCo plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.10</version>
+                <version>0.8.10</version> <!-- Use the latest version -->
                 <executions>
-                    <!-- This prepares the JaCoCo agent for coverage reporting -->
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- This generates the report after tests are run -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
