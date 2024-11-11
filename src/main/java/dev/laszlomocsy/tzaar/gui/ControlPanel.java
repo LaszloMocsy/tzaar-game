@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class ControlPanel extends JPanel {
+    private MenuPanel menuPanel;
     private JButton btnSaveGame;
     private JButton btnReturnToMenu;
     private JButton btnPass;
@@ -90,15 +91,16 @@ public class ControlPanel extends JPanel {
 
     public void updateStatus(Board board) {
         if (board.getStatus() == BoardStatus.IN_GAME) {
+            String statusSecondHalf = board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or ";
             if (board.getNextColor() == FigureColor.WHITE) {
-                lblStatus.setText("White's turn! " + (board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or "));
+                lblStatus.setText(String.format("%s's turn! %s", this.menuPanel.getWhitePlayerName(), statusSecondHalf));
             } else {
-                lblStatus.setText("Black's turn! " + (board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or "));
+                lblStatus.setText(String.format("%s's turn! %s", this.menuPanel.getBlackPlayerName(), statusSecondHalf));
             }
         } else if (board.getStatus() == BoardStatus.WHITE_WON) {
-            lblStatus.setText("White won");
+            lblStatus.setText("%s won".formatted(this.menuPanel.getWhitePlayerName()));
         } else if (board.getStatus() == BoardStatus.BLACK_WON) {
-            lblStatus.setText("Black won");
+            lblStatus.setText("%s won".formatted(this.menuPanel.getBlackPlayerName()));
         }
 
         btnPass.setVisible(board.getStatus() == BoardStatus.IN_GAME && board.getMoveCounter() == 1);
@@ -108,5 +110,9 @@ public class ControlPanel extends JPanel {
     public void updateInfo(String info) {
         lblInfo.setText(info);
         lblInfo.setVisible(true);
+    }
+    
+    public void setMenuPanel(MenuPanel menuPanel) {
+        this.menuPanel = menuPanel;
     }
 }

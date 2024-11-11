@@ -15,6 +15,8 @@ public class GameWindow extends JFrame {
 
         add(menuPanel, menuPanel.getName());
         add(gamePanel, gamePanel.getName());
+        
+        gamePanel.setMenuPanel(menuPanel);
 
         // Set up event listeners
         menuPanel.addStartGameListener(e -> {

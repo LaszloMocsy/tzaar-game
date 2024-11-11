@@ -62,6 +62,10 @@ public class GamePanel extends JPanel {
 
     //-- Public methods --//
 
+    public void setMenuPanel(MenuPanel menuPanel) {
+        this.controlPanel.setMenuPanel(menuPanel);
+    }
+
     public void startNewGame() {
         this.board = new Board();
         this.boardPanel.setBoard(this.board);

@@ -1,6 +1,8 @@
 package dev.laszlomocsy.tzaar.gui;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -19,7 +21,7 @@ public class MenuPanel extends JPanel {
      */
     public MenuPanel() {
         this.setName("menuPanel");
-        
+
         initializeComponents();
         layoutComponents();
     }
@@ -28,13 +30,33 @@ public class MenuPanel extends JPanel {
      * Initialize all UI components
      */
     private void initializeComponents() {
+        DocumentListener documentListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                textFieldChanged();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                textFieldChanged();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                textFieldChanged();
+            }
+        };
+
         lblWhitePlayer = new JLabel("White Player Name:");
         txtWhitePlayer = new JTextField(15);
+        txtWhitePlayer.getDocument().addDocumentListener(documentListener);
 
         lblBlackPlayer = new JLabel("Black Player Name:");
         txtBlackPlayer = new JTextField(15);
+        txtBlackPlayer.getDocument().addDocumentListener(documentListener);
 
         btnStartGame = new JButton("Start Game");
+        btnStartGame.setEnabled(false);
         btnLoadGame = new JButton("Load Game");
     }
 
@@ -80,6 +102,10 @@ public class MenuPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 3;
         this.add(btnLoadGame, gbc);
+    }
+
+    private void textFieldChanged() {
+        btnStartGame.setEnabled(!txtWhitePlayer.getText().isEmpty() && !txtBlackPlayer.getText().isEmpty() && !txtWhitePlayer.getText().equals(txtBlackPlayer.getText()));
     }
 
     /**
