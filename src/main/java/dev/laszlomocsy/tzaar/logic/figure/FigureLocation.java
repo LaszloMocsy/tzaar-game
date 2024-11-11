@@ -74,6 +74,78 @@ public record FigureLocation(int x, int y) {
         return y >= yStart && y <= yEnd && (x != 5 || y != 5);
     }
 
+    /**
+     * Checks if the given locations are on the same axis.
+     *
+     * @param locA the first location.
+     * @param locB the second location.
+     * @return true if the locations are on the same axis, false otherwise.
+     */
+    public static boolean hasSameAxis(FigureLocation locA, FigureLocation locB) {
+        return onSameXAxis(locA, locB) || onSameYAxis(locA, locB) || onSameZAxis(locA, locB);
+    }
+
+    /**
+     * Checks if the given locations are on the same X axis.
+     *
+     * @param a the first location.
+     * @param b the second location.
+     * @return true if the locations are on the same X axis, false otherwise.
+     */
+    private static boolean onSameXAxis(FigureLocation a, FigureLocation b) {
+        if (a.x == 5 && b.x == 5) {
+            // They are on the middle X, so each Y must be less than 5 or greater than 5
+            boolean aYLessThan5 = a.y < 5;
+            boolean bYLessThan5 = b.y < 5;
+            return aYLessThan5 == bYLessThan5;
+        } else {
+            // One of the three axes must be the same
+            return a.x == b.x;
+        }
+    }
+
+    /**
+     * Checks if the given locations are on the same Y axis.
+     *
+     * @param a the first location.
+     * @param b the second location.
+     * @return true if the locations are on the same Y axis, false otherwise.
+     */
+    private static boolean onSameYAxis(FigureLocation a, FigureLocation b) {
+        if (a.y == 5 && b.y == 5) {
+            // They are on the middle Y, so each X must be less than 5 or greater than 5
+            boolean aXLessThan5 = a.x < 5;
+            boolean bXLessThan5 = b.x < 5;
+            return aXLessThan5 == bXLessThan5;
+        } else {
+            // One of the three axes must be the same
+            return a.y == b.y;
+        }
+    }
+
+    /**
+     * Checks if the given locations are on the same Z axis.
+     *
+     * @param a the first location.
+     * @param b the second location.
+     * @return true if the locations are on the same Z axis, false otherwise.
+     */
+    private static boolean onSameZAxis(FigureLocation a, FigureLocation b) {
+        // Z = X - Y  (Z: 4, 3, 2, 1, 0, -1, -2, -3, -4)
+        int zA = a.x - a.y;
+        int zB = b.x - b.y;
+
+        if (zA == 0 && zB == 0) {
+            // They are on the middle Z, so each X must be less than 5 or greater than 5
+            boolean aXLessThan5 = a.x < 5;
+            boolean bXLessThan5 = b.x < 5;
+            return aXLessThan5 == bXLessThan5;
+        } else {
+            // One of the three axes must be the same
+            return zA == zB;
+        }
+    }
+
     //-- Overrides --//
 
     @Override
