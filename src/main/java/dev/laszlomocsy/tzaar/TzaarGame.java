@@ -1,7 +1,10 @@
 package dev.laszlomocsy.tzaar;
 
+import dev.laszlomocsy.tzaar.gui.GameWindow;
+
 public class TzaarGame {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        GameWindow gameWindow = new GameWindow();
+        gameWindow.setVisible(true);
     }
 }
