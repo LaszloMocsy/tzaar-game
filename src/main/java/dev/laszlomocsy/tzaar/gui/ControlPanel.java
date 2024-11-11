@@ -1,5 +1,9 @@
 package dev.laszlomocsy.tzaar.gui;
 
+import dev.laszlomocsy.tzaar.logic.board.Board;
+import dev.laszlomocsy.tzaar.logic.board.BoardStatus;
+import dev.laszlomocsy.tzaar.logic.figure.FigureColor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -7,7 +11,10 @@ import java.awt.event.ActionListener;
 public class ControlPanel extends JPanel {
     private JButton btnSaveGame;
     private JButton btnReturnToMenu;
+    private JButton btnPass;
     private JLabel lblStatus;
+    private JLabel lblInfo;
+    private JPanel pMiddle;
 
     /**
      * Constructor to initialize the ControlPanel
@@ -23,9 +30,18 @@ public class ControlPanel extends JPanel {
     private void initializeComponents() {
         btnSaveGame = new JButton("Save Game");
         btnReturnToMenu = new JButton("Return to Menu");
+        btnPass = new JButton("pass second move");
+        btnPass.setVisible(false);
         lblStatus = new JLabel("Ready to play?");
         lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
         lblStatus.setFont(new Font("Arial", Font.PLAIN, 20));
+        lblInfo = new JLabel("Ready to play?");
+        lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
+        lblInfo.setForeground(Color.BLUE);
+        lblInfo.setFont(new Font("Arial", Font.PLAIN, 12));
+        lblInfo.setVisible(false);
+        pMiddle = new JPanel();
+        pMiddle.setLayout(new FlowLayout());
     }
 
     /**
@@ -34,15 +50,20 @@ public class ControlPanel extends JPanel {
     private void layoutComponents() {
         this.setLayout(new BorderLayout());
 
+        pMiddle.add(lblStatus);
+        pMiddle.add(btnPass);
+
         this.add(btnSaveGame, BorderLayout.WEST);
         this.add(btnReturnToMenu, BorderLayout.EAST);
-        this.add(lblStatus, BorderLayout.CENTER);
+        this.add(pMiddle, BorderLayout.CENTER);
+        this.add(lblInfo, BorderLayout.SOUTH);
 
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
     /**
      * Add ActionListener to Save Game button
+     *
      * @param listener ActionListener
      */
     public void addSaveGameListener(ActionListener listener) {
@@ -51,6 +72,7 @@ public class ControlPanel extends JPanel {
 
     /**
      * Add ActionListener to Return to Menu button
+     *
      * @param listener ActionListener
      */
     public void addReturnToMenuListener(ActionListener listener) {
@@ -58,31 +80,33 @@ public class ControlPanel extends JPanel {
     }
 
     /**
-     * Set the status text
-     * @param status String to display in the status label
+     * Add ActionListener to Pass button
+     *
+     * @param listener ActionListener
      */
-    public void setStatus(String status) {
-        lblStatus.setText("Status: " + status);
+    public void addPassListener(ActionListener listener) {
+        btnPass.addActionListener(listener);
     }
 
-    /**
-     * Get the Save Game button (optional, for more advanced customization)
-     */
-    public JButton getSaveGameButton() {
-        return btnSaveGame;
+    public void updateStatus(Board board) {
+        if (board.getStatus() == BoardStatus.IN_GAME) {
+            if (board.getNextColor() == FigureColor.WHITE) {
+                lblStatus.setText("White's turn! " + (board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or "));
+            } else {
+                lblStatus.setText("Black's turn! " + (board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or "));
+            }
+        } else if (board.getStatus() == BoardStatus.WHITE_WON) {
+            lblStatus.setText("White won");
+        } else if (board.getStatus() == BoardStatus.BLACK_WON) {
+            lblStatus.setText("Black won");
+        }
+
+        btnPass.setVisible(board.getStatus() == BoardStatus.IN_GAME && board.getMoveCounter() == 1);
+        lblInfo.setVisible(false);
     }
 
-    /**
-     * Get the Return to Menu button (optional, for more advanced customization)
-     */
-    public JButton getReturnToMenuButton() {
-        return btnReturnToMenu;
-    }
-
-    /**
-     * Get the Status label (optional, for more advanced customization)
-     */
-    public JLabel getStatusLabel() {
-        return lblStatus;
+    public void updateInfo(String info) {
+        lblInfo.setText(info);
+        lblInfo.setVisible(true);
     }
 }

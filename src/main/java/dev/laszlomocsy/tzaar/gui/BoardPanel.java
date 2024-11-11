@@ -7,7 +7,6 @@ import dev.laszlomocsy.tzaar.logic.figure.FigureLocation;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,13 +25,14 @@ public class BoardPanel extends JPanel {
     );
     private static final float FIGURE_STACK_PADDING = 0.15f;
     private static final int FIGURE_STACK_VISIBLE_MAX = 6;
-    private Board board;
     private final List<SpaceButton> spaceButtons;
+    private Board board;
     private int bgImageSize;
     private float cellWidth;
     private float cellHeight;
     private float figureSize;
     private Position bgImagePosition;
+    private FigureLocation selectedFigureLocation;
 
     //-- Constructor --//
 
@@ -47,10 +47,20 @@ public class BoardPanel extends JPanel {
         }
     }
     
-    //-- Setter --//
+    //-- Getter --//
     
+    public FigureLocation getSelectedFigureLocation() {
+        return selectedFigureLocation;
+    }
+
+    //-- Setter --//
+
     public void setBoard(Board board) {
         this.board = board;
+    }
+
+    public void setSelectedFigureLocation(FigureLocation location) {
+        this.selectedFigureLocation = location;
     }
 
     //-- Private methods --//
@@ -68,7 +78,7 @@ public class BoardPanel extends JPanel {
 
         return new Position(startX + (x * cellWidth) + (cellWidth / 2), startY + (y * cellHeight) + (cellHeight / 2));
     }
-    
+
     //-- Public methods --//
 
     public void addSpaceButtonListener(ActionListener listener) {
@@ -136,14 +146,14 @@ public class BoardPanel extends JPanel {
         final int figureTopIndex = Math.min(figureHeight, FIGURE_STACK_VISIBLE_MAX) - 1;
         for (int i = 0; i <= figureTopIndex; i++) {
             // Draw the selected figure's visualizer
-//            if (this.selectedFigureCoordinate != null && this.selectedFigureCoordinate.equals(figure.getLocation())) {
-//                final float ringPadding = 0.25f;
-//                float ringSize = figureSize * (1 + ringPadding);
-//                int ringSizeInt = Math.round(ringSize);
-//                double ringPaddingCalc = Math.round((ringSize * ringPadding) / 2);
-//                g.setColor(Color.BLUE);
-//                g.drawOval((int) Math.round(baseAnchor.x - ringPaddingCalc), (int) Math.round(baseAnchor.y - ringPaddingCalc), ringSizeInt, ringSizeInt);
-//            }
+            if (this.selectedFigureLocation != null && this.selectedFigureLocation.equals(figure.getLocation())) {
+                final float ringPadding = 0.25f;
+                float ringSize = figureSize * (1 + ringPadding);
+                int ringSizeInt = Math.round(ringSize);
+                double ringPaddingCalc = Math.round((ringSize * ringPadding) / 2);
+                g.setColor(Color.BLUE);
+                g.drawOval((int) Math.round(baseAnchor.x - ringPaddingCalc), (int) Math.round(baseAnchor.y - ringPaddingCalc), ringSizeInt, ringSizeInt);
+            }
 
             // Draw the figure's image
             Position anchor = baseAnchor.calculateAnchor(new Position(0, figureSize * FIGURE_STACK_PADDING * i));

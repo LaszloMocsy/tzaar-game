@@ -1,30 +1,23 @@
 package dev.laszlomocsy.tzaar.gui;
 
 import dev.laszlomocsy.tzaar.logic.board.Board;
+import dev.laszlomocsy.tzaar.logic.board.BoardActionResult;
 import dev.laszlomocsy.tzaar.logic.board.BoardStatus;
-import dev.laszlomocsy.tzaar.logic.figure.Figure;
-import dev.laszlomocsy.tzaar.logic.figure.FigureColor;
-import dev.laszlomocsy.tzaar.logic.figure.FigureType;
+import dev.laszlomocsy.tzaar.logic.figure.FigureLocation;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class GamePanel extends JPanel {
     private final BoardPanel boardPanel;
     private final ControlPanel controlPanel;
-    private Random random = new Random();
-    private Board board;
-    private Figure nextFigureToPlace;
+    private transient Board board;
 
     public GamePanel() {
         this.setName("gamePanel");
         this.board = null;
-        this.nextFigureToPlace = null;
 
         setLayout(new BorderLayout());
 
@@ -32,6 +25,11 @@ public class GamePanel extends JPanel {
         add(boardPanel, BorderLayout.CENTER);
 
         controlPanel = new ControlPanel();
+        controlPanel.addPassListener(e -> {
+            System.out.println("Pass button clicked!");
+            this.board.passMove();
+            controlPanel.updateStatus(this.board);
+        });
         add(controlPanel, BorderLayout.SOUTH);
 
         boardPanel.addSpaceButtonListener(this::spaceButtonClicked);
@@ -43,7 +41,22 @@ public class GamePanel extends JPanel {
         System.out.println("Space button clicked: " + evt.getActionCommand());
 
         if (this.board.getStatus() == BoardStatus.IN_GAME) {
-            // TODO move figure
+            FigureLocation clickedLocation = FigureLocation.fromString(evt.getActionCommand());
+            FigureLocation selectedLocation = this.boardPanel.getSelectedFigureLocation();
+
+            if (selectedLocation != null) {
+                if (clickedLocation != selectedLocation) {
+                    BoardActionResult result = this.board.moveFigure(selectedLocation, clickedLocation);
+                    if (result != BoardActionResult.SUCCESS) this.controlPanel.updateInfo(result.toString());
+                    else this.controlPanel.updateStatus(this.board);
+                }
+
+                this.boardPanel.setSelectedFigureLocation(null);
+            } else {
+                this.boardPanel.setSelectedFigureLocation(clickedLocation);
+            }
+
+            this.boardPanel.repaint();
         }
     }
 
@@ -53,6 +66,8 @@ public class GamePanel extends JPanel {
         this.board = new Board();
         this.boardPanel.setBoard(this.board);
         this.boardPanel.repaint();
+
+        this.controlPanel.updateStatus(this.board);
     }
 
     //-- Action listeners --//

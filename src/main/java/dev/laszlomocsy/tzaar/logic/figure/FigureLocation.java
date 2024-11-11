@@ -57,6 +57,8 @@ public record FigureLocation(int x, int y) {
      * @return true if the location is valid, false otherwise.
      */
     public static boolean isValid(int x, int y) {
+        if (x < 1 || x > 9 || y < 1 || y > 9) return false;
+
         // All valid locations are:
         //  A1, A2, A3, A4, A5,
         //  B1, B2, B3, B4, B5, B6,
@@ -76,7 +78,7 @@ public record FigureLocation(int x, int y) {
         // there is no middle space on the board, so the x=5, y=5 is invalid
         return y >= yStart && y <= yEnd && (x != 5 || y != 5);
     }
-    
+
     /**
      * Returns all the valid locations on the board.
      *

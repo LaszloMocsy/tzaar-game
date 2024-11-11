@@ -30,7 +30,7 @@ public class Board {
         this.status = BoardStatus.SETUP;
         this.nextColor = FigureColor.WHITE;
         this.moveCounter = 0;
-        
+
         // Initialize the board with default placing
         int[] spacesInX = {5, 6, 7, 8, 8, 8, 7, 6, 5};
         for (int x = 1; x <= 9; x++) {
@@ -78,7 +78,7 @@ public class Board {
     public List<Figure> getFigures() {
         return figures;
     }
-    
+
     /**
      * Retrieves the next color that can move.
      *
@@ -86,6 +86,15 @@ public class Board {
      */
     public FigureColor getNextColor() {
         return nextColor;
+    }
+
+    /**
+     * Retrieves the current move counter.
+     *
+     * @return the current move counter
+     */
+    public int getMoveCounter() {
+        return moveCounter;
     }
 
     //-- Private Methods --//
@@ -141,26 +150,69 @@ public class Board {
      * @return the next figure from the given location on the given axis
      */
     private Optional<FigureLocation> getNextFigureFromAxis(FigureLocation location, int x, int y) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 1; i < 8; i++) {
             int nextX = location.x() + (x * i);
             int nextY = location.y() + (y * i);
             boolean isValid = FigureLocation.isValid(nextX, nextY);
 
-            if (nextX != 5 || nextY != 5) {
-                // The location is not the center of the board, check if it is valid and occupied
+            // The location is not valid, so we can stop here, because this is the first location outside the board
+            if (!isValid) break;
 
-                // The location is not valid, so we can stop here, because this is the first location outside the board
-                if (!isValid) break;
-
-                FigureLocation nextLocation = new FigureLocation(nextX, nextY);
-                Figure nextFigure = this.figures.stream().filter(f -> f.getLocation().equals(nextLocation)).findFirst().orElse(null);
-                if (nextFigure != null) {
-                    return Optional.of(nextLocation);
-                }
+            FigureLocation nextLocation = new FigureLocation(nextX, nextY);
+            Figure nextFigure = this.figures.stream().filter(f -> f.getLocation().equals(nextLocation)).findFirst().orElse(null);
+            if (nextFigure != null) {
+                return Optional.of(nextLocation);
             }
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Gets the next locations from the given location.
+     * <p>
+     * These are the locations that are on the same axis
+     * and are the closest, first occupied to the given location.
+     *
+     * @param loc the location to get the next locations from.
+     * @return the list of next locations.
+     */
+    private List<FigureLocation> getNextLocations(FigureLocation loc) {
+        List<FigureLocation> locations = new ArrayList<>();
+
+        Optional<FigureLocation> nextUpperX = getNextFigureFromAxis(loc, 1, 0);
+        nextUpperX.ifPresent(locations::add);
+
+        Optional<FigureLocation> nextLowerX = getNextFigureFromAxis(loc, -1, 0);
+        nextLowerX.ifPresent(locations::add);
+
+        Optional<FigureLocation> nextUpperY = getNextFigureFromAxis(loc, 0, 1);
+        nextUpperY.ifPresent(locations::add);
+
+        Optional<FigureLocation> nextLowerY = getNextFigureFromAxis(loc, 0, -1);
+        nextLowerY.ifPresent(locations::add);
+
+        Optional<FigureLocation> nextUpperZ = getNextFigureFromAxis(loc, 1, 1);
+        nextUpperZ.ifPresent(locations::add);
+
+        Optional<FigureLocation> nextLowerZ = getNextFigureFromAxis(loc, -1, -1);
+        nextLowerZ.ifPresent(locations::add);
+
+        return locations;
+    }
+
+    private void incrementMoveCounter() {
+        // Check if this was the very first move
+        if (this.figures.size() == 59) {
+            this.nextColor = FigureColor.BLACK;
+        } else {
+            // increment the move counter
+            this.moveCounter = (this.moveCounter + 1) % 2;
+            if (this.moveCounter == 0) {
+                // Change the next color
+                this.nextColor = this.nextColor == FigureColor.WHITE ? FigureColor.BLACK : FigureColor.WHITE;
+            }
+        }
     }
 
     //-- Public Methods --//
@@ -229,6 +281,8 @@ public class Board {
             figures.remove(figureA);
         } else if (figureA.getColor() != figureB.getColor()) {
             // Capture! - Available only if the colors are different
+            if (figureA.getHeight() < figureB.getHeight()) return BoardActionResult.FIGURE_HEIGHT_SMALLER;
+
             figures.remove(figureB);
             figureA.setLocation(locationB);
         } else {
@@ -236,47 +290,20 @@ public class Board {
             return BoardActionResult.INVALID_MOVE;
         }
 
-        // increment the move counter
-        this.moveCounter = (this.moveCounter + 1) % 2;
-        if (this.moveCounter == 0) {
-            // Change the next color
-            this.nextColor = this.nextColor == FigureColor.WHITE ? FigureColor.BLACK : FigureColor.WHITE;
-        }
-
+        incrementMoveCounter();
         updateStatus();
         return BoardActionResult.SUCCESS;
     }
 
     /**
-     * Gets the next locations from the given location.
-     * <p>
-     * These are the locations that are on the same axis
-     * and are the closest, first occupied to the given location.
-     *
-     * @param loc the location to get the next locations from.
-     * @return the list of next locations.
+     * Passes the move to the next color.
      */
-    private List<FigureLocation> getNextLocations(FigureLocation loc) {
-        List<FigureLocation> locations = new ArrayList<>();
+    public void passMove() {
+        // Check for valid board state and for second move for passing the move
+        if (this.status != BoardStatus.IN_GAME || this.moveCounter != 1) return;
 
-        Optional<FigureLocation> nextUpperX = getNextFigureFromAxis(loc, 1, 0);
-        nextUpperX.ifPresent(locations::add);
-
-        Optional<FigureLocation> nextLowerX = getNextFigureFromAxis(loc, -1, 0);
-        nextLowerX.ifPresent(locations::add);
-
-        Optional<FigureLocation> nextUpperY = getNextFigureFromAxis(loc, 0, 1);
-        nextUpperY.ifPresent(locations::add);
-
-        Optional<FigureLocation> nextLowerY = getNextFigureFromAxis(loc, 0, -1);
-        nextLowerY.ifPresent(locations::add);
-
-        Optional<FigureLocation> nextUpperZ = getNextFigureFromAxis(loc, 1, 1);
-        nextUpperZ.ifPresent(locations::add);
-
-        Optional<FigureLocation> nextLowerZ = getNextFigureFromAxis(loc, -1, -1);
-        nextLowerZ.ifPresent(locations::add);
-
-        return locations;
+        // increment the move counter
+        this.moveCounter = 0;
+        this.nextColor = this.nextColor == FigureColor.WHITE ? FigureColor.BLACK : FigureColor.WHITE;
     }
 }
