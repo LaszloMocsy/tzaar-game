@@ -18,6 +18,7 @@ public class GameWindow extends JFrame {
 
         // Set up event listeners
         menuPanel.addStartGameListener(e -> {
+            gamePanel.startNewGame();
             ((CardLayout) getContentPane().getLayout()).show(getContentPane(), gamePanel.getName());
             System.out.println("Game started!");
         });

@@ -1,5 +1,8 @@
 package dev.laszlomocsy.tzaar.logic.figure;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The location of a <code>Figure</code> on the <code>Board</code>.
  * <p>
@@ -72,6 +75,23 @@ public record FigureLocation(int x, int y) {
         // check if the y coordinate is in the valid range
         // there is no middle space on the board, so the x=5, y=5 is invalid
         return y >= yStart && y <= yEnd && (x != 5 || y != 5);
+    }
+    
+    /**
+     * Returns all the valid locations on the board.
+     *
+     * @return the list of all valid locations.
+     */
+    public static List<FigureLocation> getAllLocation() {
+        List<FigureLocation> locations = new ArrayList<>();
+        for (int x = 1; x <= 9; x++) {
+            for (int y = 1; y <= 9; y++) {
+                if (isValid(x, y)) {
+                    locations.add(new FigureLocation(x, y));
+                }
+            }
+        }
+        return locations;
     }
 
     /**

@@ -3,8 +3,10 @@ package dev.laszlomocsy.tzaar.logic.board;
 import dev.laszlomocsy.tzaar.logic.figure.Figure;
 import dev.laszlomocsy.tzaar.logic.figure.FigureColor;
 import dev.laszlomocsy.tzaar.logic.figure.FigureLocation;
+import dev.laszlomocsy.tzaar.logic.figure.FigureType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,33 @@ public class Board {
         this.status = BoardStatus.SETUP;
         this.nextColor = FigureColor.WHITE;
         this.moveCounter = 0;
+        
+        // Initialize the board with default placing
+        int[] spacesInX = {5, 6, 7, 8, 8, 8, 7, 6, 5};
+        for (int x = 1; x <= 9; x++) {
+            int startY = Math.max(1, x - 4);
+            for (int yCount = 0; yCount < spacesInX[x - 1]; yCount++) {
+                int y = startY + yCount;
+                if (x == 5 && yCount >= 4) y += 1;
+
+                final List<String> whiteFigures = Arrays.asList("A5", "B1", "B5", "B6", "C1", "C2", "C5", "C6", "C7",
+                        "D1", "D2", "D3", "D5", "D6", "D7", "D8", "E1", "E2", "E3", "E4", "F6", "G6", "G7", "H6", "H7",
+                        "H8", "I6", "I7", "I8", "I9");
+                final List<String> tzaarFigures = Arrays.asList("C3", "C4", "C5", "D3", "D6", "E3", "E7", "F4", "F7",
+                        "G5", "G6", "G7");
+                final List<String> tzarraFigures = Arrays.asList("B2", "B3", "B4", "B5", "C2", "C6", "D2", "D7", "E2",
+                        "E8", "F3", "F8", "G4", "G8", "H5", "H6", "H7", "H8");
+
+                FigureLocation location = new FigureLocation(x, y);
+                FigureColor color = whiteFigures.contains(location.toString()) ? FigureColor.WHITE : FigureColor.BLACK;
+                FigureType type;
+                if (tzaarFigures.contains(location.toString())) type = FigureType.TZAAR;
+                else if (tzarraFigures.contains(location.toString())) type = FigureType.TZARRA;
+                else type = FigureType.TOTT;
+
+                placeFigure(new Figure(location, color, type, 1));
+            }
+        }
     }
 
     //-- Getters --//
@@ -48,6 +77,15 @@ public class Board {
      */
     public List<Figure> getFigures() {
         return figures;
+    }
+    
+    /**
+     * Retrieves the next color that can move.
+     *
+     * @return the next color that can move as a {@link FigureColor} enum value
+     */
+    public FigureColor getNextColor() {
+        return nextColor;
     }
 
     //-- Private Methods --//
