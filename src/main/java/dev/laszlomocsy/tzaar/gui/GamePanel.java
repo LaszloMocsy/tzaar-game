@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class GamePanel extends JPanel {
     private final BoardPanel boardPanel;
@@ -33,6 +34,12 @@ public class GamePanel extends JPanel {
         add(controlPanel, BorderLayout.SOUTH);
 
         boardPanel.addSpaceButtonListener(this::spaceButtonClicked);
+    }
+    
+    //-- Getters --//
+    
+    public Board getBoard() {
+        return this.board;
     }
 
     //-- Private methods --//
@@ -66,11 +73,10 @@ public class GamePanel extends JPanel {
         this.controlPanel.setMenuPanel(menuPanel);
     }
 
-    public void startNewGame() {
-        this.board = new Board();
+    public void startNewGame(Board starterBoard) {
+        this.board = starterBoard == null ? Board.InitDefault() : starterBoard;
         this.boardPanel.setBoard(this.board);
         this.boardPanel.repaint();
-
         this.controlPanel.updateStatus(this.board);
     }
 

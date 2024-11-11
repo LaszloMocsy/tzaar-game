@@ -4,12 +4,19 @@ package dev.laszlomocsy.tzaar.logic.figure;
  * A single figure represented on the board.
  */
 public class Figure {
-    private final FigureColor color;
+    private FigureColor color;
     private FigureLocation location;
     private FigureType type;
     private int height;
 
     //-- Constructor --//
+
+    public Figure() {
+        this.location = null;
+        this.color = null;
+        this.type = null;
+        this.height = 0;
+    }
 
     /**
      * Initializes a new figure with the height of 1.
@@ -67,6 +74,15 @@ public class Figure {
      */
     public FigureColor getColor() {
         return color;
+    }
+
+    /**
+     * Sets the color of the figure.
+     *
+     * @param color The new color of the figure.
+     */
+    public void setColor(FigureColor color) {
+        this.color = color;
     }
 
     /**

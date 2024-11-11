@@ -107,6 +107,14 @@ public class MenuPanel extends JPanel {
     private void textFieldChanged() {
         btnStartGame.setEnabled(!txtWhitePlayer.getText().isEmpty() && !txtBlackPlayer.getText().isEmpty() && !txtWhitePlayer.getText().equals(txtBlackPlayer.getText()));
     }
+    
+    public void setWhitePlayerName(String name) {
+        txtWhitePlayer.setText(name);
+    }
+    
+    public void setBlackPlayerName(String name) {
+        txtBlackPlayer.setText(name);
+    }
 
     /**
      * Get the white player's name

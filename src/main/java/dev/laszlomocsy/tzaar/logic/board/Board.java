@@ -22,15 +22,20 @@ public class Board {
     private int moveCounter;
 
     //-- Constructors --//
-
-    /**
-     * Creates a new board with the initial status of SETUP.
-     */
-    public Board() {
+    
+    private Board() {
         this.status = BoardStatus.SETUP;
         this.nextColor = FigureColor.WHITE;
         this.moveCounter = 0;
+    }
+    
+    public static Board InitEmpty() {
+        return new Board();
+    }
 
+    public static Board InitDefault() {
+        Board board = new Board();
+        
         // Initialize the board with default placing
         int[] spacesInX = {5, 6, 7, 8, 8, 8, 7, 6, 5};
         for (int x = 1; x <= 9; x++) {
@@ -54,9 +59,11 @@ public class Board {
                 else if (tzarraFigures.contains(location.toString())) type = FigureType.TZARRA;
                 else type = FigureType.TOTT;
 
-                placeFigure(new Figure(location, color, type, 1));
+                board.placeFigure(new Figure(location, color, type, 1));
             }
         }
+        
+        return board;
     }
 
     //-- Getters --//
@@ -216,6 +223,15 @@ public class Board {
     }
 
     //-- Public Methods --//
+
+    /**
+     * Starts the game.
+     */
+    public void startGame() {
+        this.status = BoardStatus.IN_GAME;
+        
+        updateStatus();
+    }
 
     /**
      * Places a new figure on the board.
