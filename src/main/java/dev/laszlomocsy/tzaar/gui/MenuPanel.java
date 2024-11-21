@@ -7,14 +7,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class MenuPanel extends JPanel {
-
-    // Components
     private JLabel lblWhitePlayer;
     private JTextField txtWhitePlayer;
     private JLabel lblBlackPlayer;
     private JTextField txtBlackPlayer;
     private JButton btnStartGame;
     private JButton btnLoadGame;
+
+    //-- Constructor --//
 
     /**
      * Constructor to initialize the MenuPanel
@@ -25,6 +25,8 @@ public class MenuPanel extends JPanel {
         initializeComponents();
         layoutComponents();
     }
+
+    //-- Methods --//
 
     /**
      * Initialize all UI components
@@ -117,6 +119,11 @@ public class MenuPanel extends JPanel {
         return txtWhitePlayer.getText().trim();
     }
 
+    /**
+     * Set the white player's name
+     *
+     * @param name String to set in white player's text field
+     */
     public void setWhitePlayerName(String name) {
         txtWhitePlayer.setText(name);
     }
@@ -130,6 +137,11 @@ public class MenuPanel extends JPanel {
         return txtBlackPlayer.getText().trim();
     }
 
+    /**
+     * Set the black player's name
+     *
+     * @param name String to set in black player's text field
+     */
     public void setBlackPlayerName(String name) {
         txtBlackPlayer.setText(name);
     }

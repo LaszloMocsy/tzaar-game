@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * ControlPanel class to manage the control buttons and status label
+ */
 public class ControlPanel extends JPanel {
     private MenuPanel menuPanel;
     private JButton btnSaveGame;
@@ -89,6 +92,11 @@ public class ControlPanel extends JPanel {
         btnPass.addActionListener(listener);
     }
 
+    /**
+     * Update the status label based on the current board status
+     *
+     * @param board Board
+     */
     public void updateStatus(Board board) {
         if (board.getStatus() == BoardStatus.IN_GAME) {
             String statusSecondHalf = board.getMoveCounter() == 0 ? "Must capture!" : "Capture, stack or ";
@@ -107,6 +115,11 @@ public class ControlPanel extends JPanel {
         lblInfo.setText("---");
     }
 
+    /**
+     * Update the info label based on the BoardActionResult
+     *
+     * @param result BoardActionResult
+     */
     public void updateInfo(BoardActionResult result) {
         String text = switch (result) {
             case BOARD_STATUS_INVALID -> "To move, the board's status must be IN_GAME!";
@@ -125,6 +138,11 @@ public class ControlPanel extends JPanel {
         lblInfo.setText(text);
     }
 
+    /**
+     * Set the MenuPanel
+     *
+     * @param menuPanel MenuPanel
+     */
     public void setMenuPanel(MenuPanel menuPanel) {
         this.menuPanel = menuPanel;
     }

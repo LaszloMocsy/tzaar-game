@@ -16,6 +16,12 @@ import java.util.List;
 public record FigureLocation(int x, int y) {
     //-- Constructor --//
 
+    /**
+     * Creates a new <code>FigureLocation</code> with the given coordinates.
+     *
+     * @param x the x coordinate of the figure. Must be between one and 9!
+     * @param y the y coordinate of the figure. Must be between one and 9!
+     */
     public FigureLocation {
         if (x < 1 || x > 9) {
             throw new IllegalArgumentException("X must be between 1 and 9.");

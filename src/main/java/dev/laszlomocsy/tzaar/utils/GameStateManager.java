@@ -27,6 +27,9 @@ public class GameStateManager {
 
     /**
      * Saves the given game state to a file.
+     *
+     * @param gameState    The game state to save.
+     * @param dialogParent The parent component of the dialog.
      */
     public static void saveGame(GameState gameState, Component dialogParent) {
         // Create a JFileChooser instance
@@ -60,6 +63,9 @@ public class GameStateManager {
 
     /**
      * Loads a game state from a file.
+     *
+     * @param dialogParent The parent component of the dialog.
+     * @return The loaded game state.
      */
     public static Optional<GameState> loadGame(Component dialogParent) {
         // Create a JFileChooser instance
@@ -94,6 +100,7 @@ public class GameStateManager {
      *
      * @param gameState The game state to save.
      * @param file      The file to save the game state to.
+     * @return True if the game state was saved successfully, false otherwise.
      */
     public static boolean saveToFile(GameState gameState, File file) {
         try {

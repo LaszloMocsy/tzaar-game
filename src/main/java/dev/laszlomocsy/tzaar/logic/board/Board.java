@@ -23,16 +23,31 @@ public class Board {
 
     //-- Constructors --//
 
+    /**
+     * Initializes a new empty board.
+     */
     private Board() {
         this.status = BoardStatus.SETUP;
         this.nextColor = FigureColor.WHITE;
         this.moveCounter = 0;
     }
 
+    //-- Static Methods --//
+
+    /**
+     * Initializes a new empty board.
+     *
+     * @return a new empty board
+     */
     public static Board initEmpty() {
         return new Board();
     }
 
+    /**
+     * Initializes a new board with default placing.
+     *
+     * @return a new board with default placing
+     */
     public static Board initDefault() {
         Board board = new Board();
 
@@ -208,6 +223,9 @@ public class Board {
         return locations;
     }
 
+    /**
+     * Increments the move counter and changes the next color if needed.
+     */
     private void incrementMoveCounter() {
         // Check if this was the very first move
         if (this.figures.size() == 59) {

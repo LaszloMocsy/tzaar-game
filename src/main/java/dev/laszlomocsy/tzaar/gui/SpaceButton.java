@@ -4,7 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 
+/**
+ * Custom JButton class for the game board.
+ */
 public class SpaceButton extends JButton {
+    /**
+     * Constructor for the SpaceButton class.
+     */
     public SpaceButton() {
         this.setOpaque(false);
         this.setContentAreaFilled(false);

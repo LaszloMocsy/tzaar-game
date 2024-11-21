@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents the board panel of the game.
+ */
 public class BoardPanel extends JPanel {
     private static final Image BOARD_IMAGE = new ImageIcon("src/main/resources/board.png").getImage();
     private static final List<Image> FIGURE_IMAGES = Arrays.asList(
@@ -36,6 +39,9 @@ public class BoardPanel extends JPanel {
 
     //-- Constructor --//
 
+    /**
+     * Creates a new board panel.
+     */
     public BoardPanel() {
         // Create buttons for each figure on the board
         this.spaceButtons = new ArrayList<>();
@@ -46,25 +52,46 @@ public class BoardPanel extends JPanel {
             this.add(spaceButton);
         }
     }
-    
+
     //-- Getter --//
-    
+
+    /**
+     * Gets the board.
+     *
+     * @return The board.
+     */
     public FigureLocation getSelectedFigureLocation() {
         return selectedFigureLocation;
     }
 
     //-- Setter --//
 
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
+    /**
+     * Sets the selected figure location.
+     *
+     * @param location The selected figure location.
+     */
     public void setSelectedFigureLocation(FigureLocation location) {
         this.selectedFigureLocation = location;
     }
 
+    /**
+     * Sets the board.
+     *
+     * @param board The board to set.
+     */
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
     //-- Private methods --//
 
+    /**
+     * Converts a figure location to a position on the board.
+     *
+     * @param location The figure location.
+     * @return The position on the board.
+     */
     private Position locationToPositionOrigo(FigureLocation location) {
         int x = location.x();
         int y = (9 - location.y()) * 2;
@@ -81,6 +108,11 @@ public class BoardPanel extends JPanel {
 
     //-- Public methods --//
 
+    /**
+     * Adds a space button listener.
+     *
+     * @param listener The listener to add.
+     */
     public void addSpaceButtonListener(ActionListener listener) {
         for (SpaceButton btnSpace : this.spaceButtons) {
             btnSpace.addActionListener(listener);
@@ -104,6 +136,11 @@ public class BoardPanel extends JPanel {
         if (board != null) paintFigures(g);
     }
 
+    /**
+     * Paints the background of the board.
+     *
+     * @param g The graphics object.
+     */
     private void paintBackground(Graphics g) {
         // Paint the background white, because the image's background is white
         g.setColor(Color.WHITE);
@@ -127,7 +164,11 @@ public class BoardPanel extends JPanel {
         g.drawImage(BOARD_IMAGE, posX, posY, bgImageSize, bgImageSize, null);
     }
 
-    /// Paint the figures on the board
+    /**
+     * Paints the figures on the board.
+     *
+     * @param g The graphics object.
+     */
     private void paintFigures(Graphics g) {
         // Loop through the board and draw the figures
         for (Figure figure : this.board.getFigures()) {
@@ -139,7 +180,13 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    /// Paint a single figure to the board
+    /**
+     * Paints a figure on the board.
+     *
+     * @param g          The graphics object.
+     * @param figure     The figure to paint.
+     * @param baseAnchor The base anchor position.
+     */
     private void paintFigure(Graphics g, Figure figure, Position baseAnchor) {
         final int figureStackVisibleTextMin = 3;
         final int figureHeight = figure.getHeight();
@@ -175,7 +222,9 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    /// Position the figure buttons on the board
+    /**
+     * Positions the space buttons on the board.
+     */
     private void positionSpaceButtons() {
         // Loop through all space buttons
         for (SpaceButton btnSpace : this.spaceButtons) {
@@ -213,6 +262,12 @@ public class BoardPanel extends JPanel {
             return Math.round(this.y);
         }
 
+        /**
+         * Calculates the anchor position.
+         *
+         * @param offset The offset position.
+         * @return The anchor position.
+         */
         public Position calculateAnchor(Position offset) {
             return new Position(this.x - offset.x, this.y - offset.y);
         }
