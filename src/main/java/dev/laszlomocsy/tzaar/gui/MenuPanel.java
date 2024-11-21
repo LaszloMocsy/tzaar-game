@@ -107,14 +107,6 @@ public class MenuPanel extends JPanel {
     private void textFieldChanged() {
         btnStartGame.setEnabled(!txtWhitePlayer.getText().isEmpty() && !txtBlackPlayer.getText().isEmpty() && !txtWhitePlayer.getText().equals(txtBlackPlayer.getText()));
     }
-    
-    public void setWhitePlayerName(String name) {
-        txtWhitePlayer.setText(name);
-    }
-    
-    public void setBlackPlayerName(String name) {
-        txtBlackPlayer.setText(name);
-    }
 
     /**
      * Get the white player's name
@@ -125,6 +117,10 @@ public class MenuPanel extends JPanel {
         return txtWhitePlayer.getText().trim();
     }
 
+    public void setWhitePlayerName(String name) {
+        txtWhitePlayer.setText(name);
+    }
+
     /**
      * Get the black player's name
      *
@@ -132,6 +128,10 @@ public class MenuPanel extends JPanel {
      */
     public String getBlackPlayerName() {
         return txtBlackPlayer.getText().trim();
+    }
+
+    public void setBlackPlayerName(String name) {
+        txtBlackPlayer.setText(name);
     }
 
     /**
@@ -150,13 +150,5 @@ public class MenuPanel extends JPanel {
      */
     public void addLoadGameListener(ActionListener listener) {
         btnLoadGame.addActionListener(listener);
-    }
-
-    /**
-     * Reset the text fields
-     */
-    public void resetFields() {
-        txtWhitePlayer.setText("");
-        txtBlackPlayer.setText("");
     }
 }

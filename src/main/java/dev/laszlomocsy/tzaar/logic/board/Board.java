@@ -22,20 +22,20 @@ public class Board {
     private int moveCounter;
 
     //-- Constructors --//
-    
+
     private Board() {
         this.status = BoardStatus.SETUP;
         this.nextColor = FigureColor.WHITE;
         this.moveCounter = 0;
     }
-    
-    public static Board InitEmpty() {
+
+    public static Board initEmpty() {
         return new Board();
     }
 
-    public static Board InitDefault() {
+    public static Board initDefault() {
         Board board = new Board();
-        
+
         // Initialize the board with default placing
         int[] spacesInX = {5, 6, 7, 8, 8, 8, 7, 6, 5};
         for (int x = 1; x <= 9; x++) {
@@ -62,7 +62,7 @@ public class Board {
                 board.placeFigure(new Figure(location, color, type, 1));
             }
         }
-        
+
         return board;
     }
 
@@ -229,7 +229,7 @@ public class Board {
      */
     public void startGame() {
         this.status = BoardStatus.IN_GAME;
-        
+
         updateStatus();
     }
 
@@ -237,17 +237,13 @@ public class Board {
      * Places a new figure on the board.
      *
      * @param figure the figure to place on the board
-     * @return the result of the action as a {@link BoardActionResult} enum value
      */
-    public BoardActionResult placeFigure(Figure figure) {
+    public void placeFigure(Figure figure) {
         // Check for valid board state for placing a figure
-        if (figure == null) return BoardActionResult.FIGURE_NULL;
-        else if (this.status != BoardStatus.SETUP) return BoardActionResult.BOARD_STATUS_INVALID;
+        if (figure == null || this.status != BoardStatus.SETUP) return;
 
         // Check if the location is already occupied
-        if (this.figures.stream().anyMatch(f -> f.getLocation().equals(figure.getLocation()))) {
-            return BoardActionResult.FIGURE_LOCATION_OCCUPIED;
-        }
+        this.figures.stream().filter(f -> f.getLocation().equals(figure.getLocation())).findFirst().ifPresent(figures::remove);
 
         // Add the figure to the board
         figures.add(figure);
@@ -256,8 +252,6 @@ public class Board {
         if (figures.size() == 60) {
             this.status = BoardStatus.IN_GAME;
         }
-
-        return BoardActionResult.SUCCESS;
     }
 
     /**

@@ -70,7 +70,7 @@ public class GamePanel extends JPanel {
     }
 
     public void startNewGame(Board starterBoard) {
-        this.board = starterBoard == null ? Board.InitDefault() : starterBoard;
+        this.board = starterBoard == null ? Board.initDefault() : starterBoard;
         this.boardPanel.setBoard(this.board);
         this.boardPanel.repaint();
         this.controlPanel.updateStatus(this.board);

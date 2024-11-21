@@ -146,7 +146,7 @@ public class GameStateManager {
      * @return The board generated from the game state.
      */
     public static Board generateBoard(GameState gameState) {
-        Board board = Board.InitEmpty();
+        Board board = Board.initEmpty();
         for (Figure figure : gameState.figures) {
             board.placeFigure(figure);
         }

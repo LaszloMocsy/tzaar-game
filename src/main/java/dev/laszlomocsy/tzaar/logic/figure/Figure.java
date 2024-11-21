@@ -4,13 +4,19 @@ package dev.laszlomocsy.tzaar.logic.figure;
  * A single figure represented on the board.
  */
 public class Figure {
-    private FigureColor color;
+    private final FigureColor color;
     private FigureLocation location;
     private FigureType type;
     private int height;
 
     //-- Constructor --//
 
+    /**
+     * Initializes a new figure with no location, color, type, and height.
+     * <p>
+     * This constructor is used for creating a new figure with no properties.
+     * (Serialization)
+     */
     public Figure() {
         this.location = null;
         this.color = null;
@@ -74,15 +80,6 @@ public class Figure {
      */
     public FigureColor getColor() {
         return color;
-    }
-
-    /**
-     * Sets the color of the figure.
-     *
-     * @param color The new color of the figure.
-     */
-    public void setColor(FigureColor color) {
-        this.color = color;
     }
 
     /**

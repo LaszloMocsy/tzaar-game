@@ -26,13 +26,13 @@ public class BoardPanel extends JPanel {
     private static final float FIGURE_STACK_PADDING = 0.15f;
     private static final int FIGURE_STACK_VISIBLE_MAX = 6;
     private final List<SpaceButton> spaceButtons;
-    private Board board;
+    private transient Board board;
     private int bgImageSize;
     private float cellWidth;
     private float cellHeight;
     private float figureSize;
-    private Position bgImagePosition;
-    private FigureLocation selectedFigureLocation;
+    private transient Position bgImagePosition;
+    private transient FigureLocation selectedFigureLocation;
 
     //-- Constructor --//
 

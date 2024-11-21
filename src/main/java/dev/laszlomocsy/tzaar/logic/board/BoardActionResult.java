@@ -1,5 +1,8 @@
 package dev.laszlomocsy.tzaar.logic.board;
 
+/**
+ * The result of a board action.
+ */
 public enum BoardActionResult {
     SUCCESS, // The action was successful
     BOARD_STATUS_INVALID, // The board status is invalid for the action

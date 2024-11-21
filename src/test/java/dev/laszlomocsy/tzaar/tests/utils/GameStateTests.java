@@ -17,7 +17,7 @@ class GameStateTests {
         // Set up the game state
         String player1 = "John";
         String player2 = "Jane";
-        Board board = Board.InitDefault();
+        Board board = Board.initDefault();
 
         // Save the game state
         GameState state = GameStateManager.generateGameState(board, player1, player2);
