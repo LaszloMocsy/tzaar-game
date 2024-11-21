@@ -48,9 +48,9 @@ public class GamePanel extends JPanel {
             FigureLocation selectedLocation = this.boardPanel.getSelectedFigureLocation();
 
             if (selectedLocation != null) {
-                if (clickedLocation != selectedLocation) {
+                if (!clickedLocation.equals(selectedLocation)) {
                     BoardActionResult result = this.board.moveFigure(selectedLocation, clickedLocation);
-                    if (result != BoardActionResult.SUCCESS) this.controlPanel.updateInfo(result.toString());
+                    if (result != BoardActionResult.SUCCESS) this.controlPanel.updateInfo(result);
                     else this.controlPanel.updateStatus(this.board);
                 }
 

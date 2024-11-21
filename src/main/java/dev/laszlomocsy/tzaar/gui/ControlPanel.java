@@ -1,6 +1,7 @@
 package dev.laszlomocsy.tzaar.gui;
 
 import dev.laszlomocsy.tzaar.logic.board.Board;
+import dev.laszlomocsy.tzaar.logic.board.BoardActionResult;
 import dev.laszlomocsy.tzaar.logic.board.BoardStatus;
 import dev.laszlomocsy.tzaar.logic.figure.FigureColor;
 
@@ -36,11 +37,10 @@ public class ControlPanel extends JPanel {
         lblStatus = new JLabel("Ready to play?");
         lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
         lblStatus.setFont(new Font("Arial", Font.PLAIN, 20));
-        lblInfo = new JLabel("Ready to play?");
+        lblInfo = new JLabel("---");
         lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
         lblInfo.setForeground(Color.BLUE);
         lblInfo.setFont(new Font("Arial", Font.PLAIN, 12));
-        lblInfo.setVisible(false);
         pMiddle = new JPanel();
         pMiddle.setLayout(new FlowLayout());
     }
@@ -104,14 +104,27 @@ public class ControlPanel extends JPanel {
         }
 
         btnPass.setVisible(board.getStatus() == BoardStatus.IN_GAME && board.getMoveCounter() == 1);
-        lblInfo.setVisible(false);
+        lblInfo.setText("---");
     }
 
-    public void updateInfo(String info) {
-        lblInfo.setText(info);
-        lblInfo.setVisible(true);
+    public void updateInfo(BoardActionResult result) {
+        String text = switch (result) {
+            case BOARD_STATUS_INVALID -> "To move, the board's status must be IN_GAME!";
+            case FIGURE_NULL -> "The selected figure is null!";
+            case FIGURE_LOCATION_OCCUPIED -> "The last selected location is occupied!";
+            case FIGURE_HEIGHT_SMALLER ->
+                    "Selected figure's height must be equal or greater than the target figure's height!";
+            case LOCATIONS_ARE_EQUAL -> "Select another location to move!";
+            case LOCATIONS_HAS_NO_SAME_AXIS -> "The two locations must be on the same axis!";
+            case LOCATION_A_EMPTY -> "The start location is empty!";
+            case LOCATION_B_EMPTY -> "The target location is empty!";
+            case COLOR_INVALID -> "The selected figure's color is invalid!";
+            case INVALID_MOVE -> "The move was not conform to the rules!";
+            default -> "Unknown error!";
+        };
+        lblInfo.setText(text);
     }
-    
+
     public void setMenuPanel(MenuPanel menuPanel) {
         this.menuPanel = menuPanel;
     }

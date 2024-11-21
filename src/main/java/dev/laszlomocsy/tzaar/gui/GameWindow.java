@@ -20,7 +20,7 @@ public class GameWindow extends JFrame {
      */
     public GameWindow() {
         setTitle("Tzaar Game");
-        setSize(600, 700);
+        setSize(850, 700);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new CardLayout());
 
