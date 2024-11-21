@@ -16,6 +16,7 @@ jobs:
     
     # Define the permissions for the job
     permissions:
+      contents: write
       pages: write
 
     # Steps to execute within the job
@@ -46,7 +47,7 @@ jobs:
       
       # Step 5: Deploy Javadoc to GitHub Pages
       - name: Deploy Javadoc to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/reports/apidocs
