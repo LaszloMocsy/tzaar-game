@@ -8,6 +8,7 @@ import dev.laszlomocsy.tzaar.logic.figure.FigureLocation;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,17 +18,47 @@ import java.util.List;
  * Represents the board panel of the game.
  */
 public class BoardPanel extends JPanel {
-    private static final Image BOARD_IMAGE = new ImageIcon("src/main/resources/board.png").getImage();
-    private static final List<Image> FIGURE_IMAGES = Arrays.asList(
-            new ImageIcon("src/main/resources/white-tzaar.png").getImage(),
-            new ImageIcon("src/main/resources/white-tzarra.png").getImage(),
-            new ImageIcon("src/main/resources/white-tott.png").getImage(),
-            new ImageIcon("src/main/resources/black-tzaar.png").getImage(),
-            new ImageIcon("src/main/resources/black-tzarra.png").getImage(),
-            new ImageIcon("src/main/resources/black-tott.png").getImage()
-    );
+    private static final Image BOARD_IMAGE;
+    private static final List<Image> FIGURE_IMAGES;
     private static final float FIGURE_STACK_PADDING = 0.15f;
     private static final int FIGURE_STACK_VISIBLE_MAX = 6;
+
+    static {
+        URL boardImg = BoardPanel.class.getResource("/board.png");
+        URL whiteTzaarImg = BoardPanel.class.getResource("/white-tzaar.png");
+        URL whiteTzarraImg = BoardPanel.class.getResource("/white-tzarra.png");
+        URL whiteTottImg = BoardPanel.class.getResource("/white-tott.png");
+        URL blackTzaarImg = BoardPanel.class.getResource("/black-tzaar.png");
+        URL blackTzarraImg = BoardPanel.class.getResource("/black-tzarra.png");
+        URL blackTottImg = BoardPanel.class.getResource("/black-tott.png");
+
+        if (boardImg == null) {
+            throw new IllegalArgumentException("Resource not found: board.png");
+        } else if (whiteTzaarImg == null) {
+            throw new IllegalArgumentException("Resource not found: white-tzaar.png");
+        } else if (whiteTzarraImg == null) {
+            throw new IllegalArgumentException("Resource not found: white-tzarra.png");
+        } else if (whiteTottImg == null) {
+            throw new IllegalArgumentException("Resource not found: white-tott.png");
+        } else if (blackTzaarImg == null) {
+            throw new IllegalArgumentException("Resource not found: black-tzaar.png");
+        } else if (blackTzarraImg == null) {
+            throw new IllegalArgumentException("Resource not found: black-tzarra.png");
+        } else if (blackTottImg == null) {
+            throw new IllegalArgumentException("Resource not found: black-tott.png");
+        }
+
+        BOARD_IMAGE = new ImageIcon(boardImg).getImage();
+        FIGURE_IMAGES = Arrays.asList(
+                new ImageIcon(whiteTzaarImg).getImage(),
+                new ImageIcon(whiteTzarraImg).getImage(),
+                new ImageIcon(whiteTottImg).getImage(),
+                new ImageIcon(blackTzaarImg).getImage(),
+                new ImageIcon(blackTzarraImg).getImage(),
+                new ImageIcon(blackTottImg).getImage()
+        );
+    }
+
     private final List<SpaceButton> spaceButtons;
     private transient Board board;
     private int bgImageSize;

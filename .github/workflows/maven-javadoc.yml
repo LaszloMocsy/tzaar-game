@@ -2,7 +2,6 @@ name: Generate Javadoc
 
 # Trigger the workflow on push or pull request events to the main branch
 on:
-  workflow_dispatch:
   push:
     branches: [main]
 
