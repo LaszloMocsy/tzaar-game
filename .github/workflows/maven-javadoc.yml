@@ -1,0 +1,52 @@
+name: Generate Javadoc
+
+# Trigger the workflow on push or pull request events to the main branch
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  release: 
+    types: [published]
+
+# Define the jobs that the workflow will run
+jobs:
+  generate-javadoc:
+    # Runs the job on a virtual machine with Ubuntu installed
+    runs-on: ubuntu-latest
+    
+    # Define the permissions for the job
+    permissions:
+      pages: write
+
+    # Steps to execute within the job
+    steps:
+      # Step 1: Check out the repository to the virtual machine
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up the required Java version
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'oracle'
+
+      # Step 3: Cache Maven dependencies to speed up builds
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Step 4: Generate Javadoc
+      - name: Generate Javadoc
+        run: mvn clean javadoc:javadoc
+      
+      # Step 5: Deploy Javadoc to GitHub Pages
+      - name: Deploy Javadoc to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/reports/apidocs

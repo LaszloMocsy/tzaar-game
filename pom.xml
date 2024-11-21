@@ -7,10 +7,25 @@
     <groupId>dev.laszlomocsy</groupId>
     <artifactId>tzaar</artifactId>
     <version>0.1-alpha</version>
-    
+
     <build>
         <plugins>
             <!-- Other plugins -->
+
+            <!-- Javadoc plugin for Maven -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Maven Jar Plugin -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -25,7 +40,7 @@
                     </archive>
                 </configuration>
             </plugin>
-            
+
             <!-- Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -40,7 +55,8 @@
                         <configuration>
                             <transformers>
                                 <!-- Ensure the Main-Class is set in the manifest -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>dev.laszlomocsy.tzaar.TzaarGame</mainClass>
                                 </transformer>
                             </transformers>
@@ -75,7 +91,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- JaCoCo plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
