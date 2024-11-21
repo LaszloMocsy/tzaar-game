@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run all tests in tzaar-game" type="JUnit" factoryName="JUnit">
-    <module name="tzaar-game" />
+    <module name="tzaar" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="dev.laszlomocsy.tzaar.tests.*" />

@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Tzaar Game" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="dev.laszlomocsy.tzaar.TzaarGame" />
-    <module name="tzaar-game" />
+    <module name="tzaar" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="tzaar.*" />

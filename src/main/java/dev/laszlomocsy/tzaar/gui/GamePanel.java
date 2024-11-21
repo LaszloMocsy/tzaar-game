@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Objects;
 
 public class GamePanel extends JPanel {
     private final BoardPanel boardPanel;
@@ -27,7 +26,6 @@ public class GamePanel extends JPanel {
 
         controlPanel = new ControlPanel();
         controlPanel.addPassListener(e -> {
-            System.out.println("Pass button clicked!");
             this.board.passMove();
             controlPanel.updateStatus(this.board);
         });
@@ -35,9 +33,9 @@ public class GamePanel extends JPanel {
 
         boardPanel.addSpaceButtonListener(this::spaceButtonClicked);
     }
-    
+
     //-- Getters --//
-    
+
     public Board getBoard() {
         return this.board;
     }
@@ -45,8 +43,6 @@ public class GamePanel extends JPanel {
     //-- Private methods --//
 
     private void spaceButtonClicked(ActionEvent evt) {
-        System.out.println("Space button clicked: " + evt.getActionCommand());
-
         if (this.board.getStatus() == BoardStatus.IN_GAME) {
             FigureLocation clickedLocation = FigureLocation.fromString(evt.getActionCommand());
             FigureLocation selectedLocation = this.boardPanel.getSelectedFigureLocation();
