@@ -49,11 +49,11 @@ public class MenuPanel extends JPanel {
             }
         };
 
-        lblWhitePlayer = new JLabel("White Player Name:");
+        lblWhitePlayer = new JLabel("Player1's name (white figures):");
         txtWhitePlayer = new JTextField(15);
         txtWhitePlayer.getDocument().addDocumentListener(documentListener);
 
-        lblBlackPlayer = new JLabel("Black Player Name:");
+        lblBlackPlayer = new JLabel("Player2's name (black figures):");
         txtBlackPlayer = new JTextField(15);
         txtBlackPlayer.getDocument().addDocumentListener(documentListener);
 
